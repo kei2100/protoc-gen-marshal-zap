@@ -7,8 +7,9 @@ proto:
 	@$(MAKE) marshal-zap.pb.go
 
 %.pb.go: %.proto
-	cd $(*D)
-	protoc --go_out=. $(*).proto
+	protoc --go_out=$(*D) $(*).proto
+	mv $(*D)/$(GIT_REPOSITORY)/$(@) $(*D)
+	rm -r $(*D)/$(GIT_HOST)
 
 .PHONY:
 install: proto
