@@ -173,8 +173,8 @@ func (m *{{ .Name }}) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 				{{ else }}	
 					enc.AddReflected({{ .MapType.KeyType.KeyToString "k" }}, v)
 				{{ end }}	
-				return nil
 			}
+			return nil
 		}))
 
 	{{ else }}	
