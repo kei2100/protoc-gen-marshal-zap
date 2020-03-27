@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package simple;
+
+// If you want to use "marshal_zap.mask" option, import "marshal-zap.proto"
+import "marshal-zap.proto";
+
+message SimpleMessage {
+  string message = 1;
+  string secret_message = 2 [(marshal_zap.mask) = true];
+}
