@@ -1,7 +1,6 @@
 syntax = "proto3";
 
 package marshal_zap;
-option go_package = "github.com/kei2100/protoc-gen-marshal-zap;marshal_zap";
 
 import "google/protobuf/descriptor.proto";
 
