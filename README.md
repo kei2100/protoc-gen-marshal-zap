@@ -1,6 +1,6 @@
 # protoc-gen-marshal-zap
 
-protoc-gen-marshal-zap is a protoc plugin to generate code that implements the zap.ObjectMarshaler interface ([uber-go/zap](https://github.com/uber-go/zap)) to the protoc message.
+protoc-gen-marshal-zap is a protoc plugin to generate code that implements zapcore.ObjectMarshaler interface ([uber-go/zap](https://github.com/uber-go/zap)) to the protoc message.
 
 ## Requirements
 
