@@ -34,7 +34,9 @@ func init() {
 	proto.RegisterExtension(E_Mask)
 }
 
-func init() { proto.RegisterFile("marshal-zap.proto", fileDescriptor_cc8f134151c30e4c) }
+func init() {
+	proto.RegisterFile("marshal-zap.proto", fileDescriptor_cc8f134151c30e4c)
+}
 
 var fileDescriptor_cc8f134151c30e4c = []byte{
 	// 159 bytes of a gzipped FileDescriptorProto
