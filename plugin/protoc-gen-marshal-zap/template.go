@@ -87,7 +87,7 @@ func (t protoType) ScalarName() string {
 	case descriptor.FieldDescriptorProto_TYPE_STRING:
 		return "String"
 	case descriptor.FieldDescriptorProto_TYPE_BYTES:
-		return "ByteString"
+		return "Binary"
 	}
 	panic(fmt.Sprintf("unknown scalar type %s", t))
 }
