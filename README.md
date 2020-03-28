@@ -74,3 +74,14 @@ func (m *SimpleMessage) MarshalLogObject(enc zapcore.ObjectEncoder) error {
         return nil
 }
 ```
+
+## Development
+Compile marshal-zap.proto
+```
+$ make proto
+```
+
+Run tests
+```
+$ make test
+```

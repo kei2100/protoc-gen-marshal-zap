@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package types;
+option go_package = "github.com/kei2100/protoc-gen-marshal-zap/test/types;types";
+
+import "marshal-zap.proto";
+
+message Types {
+  string secret1 = 1 [(marshal_zap.mask) = true];
+  double double1 = 2;
+
+  // TODO many types
+}
