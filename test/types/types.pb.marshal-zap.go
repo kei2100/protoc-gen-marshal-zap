@@ -150,6 +150,12 @@ func (m *Types) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	}
 	enc.AddArray("repeated_empty_val", zapcore.ArrayMarshalerFunc(repeated_empty_valArrMarshaller))
 
+	if obj, ok := interface{}(m.StructVal).(zapcore.ObjectMarshaler); ok {
+		enc.AddObject("struct_val", obj)
+	} else {
+		enc.AddReflected("struct_val", m.StructVal)
+	}
+
 	return nil
 }
 
