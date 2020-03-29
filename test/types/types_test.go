@@ -3,6 +3,8 @@ package types
 import (
 	"testing"
 
+	structpb "github.com/golang/protobuf/ptypes/struct"
+
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap/zapcore"
 )
@@ -63,6 +65,19 @@ func TestTypes_MarshalLogObject(t *testing.T) {
 			},
 		},
 		RepeatedEmptyVal: []string{},
+		StructVal: &structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"struct_string": {
+					Kind: &structpb.Value_StringValue{StringValue: "foo"},
+				},
+				"struct_number": {
+					Kind: &structpb.Value_NumberValue{NumberValue: 0.1},
+				},
+				"struct_bool": {
+					Kind: &structpb.Value_BoolValue{BoolValue: true},
+				},
+			},
+		},
 	}
 	enc := zapcore.NewMapObjectEncoder()
 	err := m.MarshalLogObject(enc)
@@ -121,5 +136,18 @@ func TestTypes_MarshalLogObject(t *testing.T) {
 			},
 		},
 		"repeated_empty_val": []interface{}{},
+		"struct_val": &structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"struct_string": {
+					Kind: &structpb.Value_StringValue{StringValue: "foo"},
+				},
+				"struct_number": {
+					Kind: &structpb.Value_NumberValue{NumberValue: 0.1},
+				},
+				"struct_bool": {
+					Kind: &structpb.Value_BoolValue{BoolValue: true},
+				},
+			},
+		},
 	})
 }
