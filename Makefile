@@ -23,3 +23,8 @@ test: install test.proto
 .PHONY: test.proto
 test.proto:
 	@PROTOC_OPT='-I. -Itest/types --marshal-zap_out=test/types' $(MAKE) test/types/types.pb.go
+
+.PHONY: test.ci
+test.ci:
+	@which act > /dev/null 2>&1 || brew install nektos/tap/act
+	act -P ubuntu-latest=nektos/act-environments-ubuntu:18.04 -s GITHUB_TOKEN=$${GITHUB_TOKEN}
