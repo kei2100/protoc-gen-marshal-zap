@@ -1,5 +1,6 @@
 # protoc-gen-marshal-zap 
 ![test](https://github.com/kei2100/protoc-gen-marshal-zap/workflows/test/badge.svg)
+![CodeQL](https://github.com/kei2100/protoc-gen-marshal-zap/workflows/CodeQL/badge.svg)
 
 protoc-gen-marshal-zap is a protoc plugin to generate code that implements zapcore.ObjectMarshaler interface ([uber-go/zap](https://github.com/uber-go/zap)) to the protoc message.
 
