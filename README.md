@@ -64,12 +64,12 @@ import (
 var _ = zapcore.NewNopCore
 var _ = strconv.FormatInt
 
-func (m *SimpleMessage) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-        if m == nil {
+func (x *SimpleMessage) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+        if x == nil {
                 return nil
         }
 
-        enc.AddString("message", m.Message)
+        enc.AddString("message", x.Message)
 
         enc.AddString("secret_message", "[MASKED]")
 

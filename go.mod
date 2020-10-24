@@ -8,5 +8,5 @@ require (
 	github.com/spf13/afero v1.3.4 // indirect
 	github.com/stretchr/testify v1.6.1
 	go.uber.org/zap v1.14.1
-	google.golang.org/protobuf v1.25.0 // indirect
+	google.golang.org/protobuf v1.25.0
 )

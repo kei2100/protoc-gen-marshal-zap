@@ -12,71 +12,71 @@ import (
 var _ = zapcore.NewNopCore
 var _ = strconv.FormatInt
 
-func (m *Types) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	if m == nil {
+func (x *Types) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	if x == nil {
 		return nil
 	}
 
 	enc.AddString("secret_val", "[MASKED]")
 
-	enc.AddFloat64("double_val", m.DoubleVal)
+	enc.AddFloat64("double_val", x.DoubleVal)
 
-	enc.AddFloat32("float_val", m.FloatVal)
+	enc.AddFloat32("float_val", x.FloatVal)
 
-	enc.AddInt32("int32_val", m.Int32Val)
+	enc.AddInt32("int32_val", x.Int32Val)
 
-	enc.AddInt64("int64_val", m.Int64Val)
+	enc.AddInt64("int64_val", x.Int64Val)
 
-	enc.AddUint32("uint32_val", m.Uint32Val)
+	enc.AddUint32("uint32_val", x.Uint32Val)
 
-	enc.AddUint64("uint64_val", m.Uint64Val)
+	enc.AddUint64("uint64_val", x.Uint64Val)
 
-	enc.AddInt32("sint32_val", m.Sint32Val)
+	enc.AddInt32("sint32_val", x.Sint32Val)
 
-	enc.AddInt64("sint64_val", m.Sint64Val)
+	enc.AddInt64("sint64_val", x.Sint64Val)
 
-	enc.AddUint32("fixed32_val", m.Fixed32Val)
+	enc.AddUint32("fixed32_val", x.Fixed32Val)
 
-	enc.AddUint64("fixed64_val", m.Fixed64Val)
+	enc.AddUint64("fixed64_val", x.Fixed64Val)
 
-	enc.AddInt32("sfixed32_val", m.Sfixed32Val)
+	enc.AddInt32("sfixed32_val", x.Sfixed32Val)
 
-	enc.AddInt64("sfixed64_val", m.Sfixed64Val)
+	enc.AddInt64("sfixed64_val", x.Sfixed64Val)
 
-	enc.AddBool("bool_val", m.BoolVal)
+	enc.AddBool("bool_val", x.BoolVal)
 
-	enc.AddString("string_val", m.StringVal)
+	enc.AddString("string_val", x.StringVal)
 
-	enc.AddBinary("bytes_val", m.BytesVal)
+	enc.AddBinary("bytes_val", x.BytesVal)
 
-	enc.AddString("enum_val", m.EnumVal.String())
+	enc.AddString("enum_val", x.EnumVal.String())
 
-	if obj, ok := interface{}(m.OtherTypeVal).(zapcore.ObjectMarshaler); ok {
+	if obj, ok := interface{}(x.OtherTypeVal).(zapcore.ObjectMarshaler); ok {
 		enc.AddObject("other_type_val", obj)
 	} else {
-		enc.AddReflected("other_type_val", m.OtherTypeVal)
+		enc.AddReflected("other_type_val", x.OtherTypeVal)
 	}
 
-	if obj, ok := interface{}(m.NestedTypeVal).(zapcore.ObjectMarshaler); ok {
+	if obj, ok := interface{}(x.NestedTypeVal).(zapcore.ObjectMarshaler); ok {
 		enc.AddObject("nested_type_val", obj)
 	} else {
-		enc.AddReflected("nested_type_val", m.NestedTypeVal)
+		enc.AddReflected("nested_type_val", x.NestedTypeVal)
 	}
 
-	if obj, ok := interface{}(m.OtherTypeNestedTypeVal).(zapcore.ObjectMarshaler); ok {
+	if obj, ok := interface{}(x.OtherTypeNestedTypeVal).(zapcore.ObjectMarshaler); ok {
 		enc.AddObject("other_type_nested_type_val", obj)
 	} else {
-		enc.AddReflected("other_type_nested_type_val", m.OtherTypeNestedTypeVal)
+		enc.AddReflected("other_type_nested_type_val", x.OtherTypeNestedTypeVal)
 	}
 
-	enc.AddString("oneof_string_val", m.GetOneofStringVal())
+	enc.AddString("oneof_string_val", x.GetOneofStringVal())
 
-	enc.AddInt64("oneof_int64_val", m.GetOneofInt64Val())
+	enc.AddInt64("oneof_int64_val", x.GetOneofInt64Val())
 
-	enc.AddBool("oneof_bool_val", m.GetOneofBoolVal())
+	enc.AddBool("oneof_bool_val", x.GetOneofBoolVal())
 
 	enc.AddObject("map_val1", zapcore.ObjectMarshalerFunc(func(enc zapcore.ObjectEncoder) error {
-		for k, v := range m.MapVal1 {
+		for k, v := range x.MapVal1 {
 
 			enc.AddString(k, v)
 
@@ -85,7 +85,7 @@ func (m *Types) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	}))
 
 	enc.AddObject("map_val2", zapcore.ObjectMarshalerFunc(func(enc zapcore.ObjectEncoder) error {
-		for k, v := range m.MapVal2 {
+		for k, v := range x.MapVal2 {
 
 			if obj, ok := interface{}(v).(zapcore.ObjectMarshaler); ok {
 				enc.AddObject(k, obj)
@@ -98,7 +98,7 @@ func (m *Types) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	}))
 
 	enc.AddObject("map_empty_val", zapcore.ObjectMarshalerFunc(func(enc zapcore.ObjectEncoder) error {
-		for k, v := range m.MapEmptyVal {
+		for k, v := range x.MapEmptyVal {
 
 			enc.AddString(k, v)
 
@@ -107,7 +107,7 @@ func (m *Types) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	}))
 
 	repeated_val1ArrMarshaller := func(enc zapcore.ArrayEncoder) error {
-		for _, v := range m.RepeatedVal1 {
+		for _, v := range x.RepeatedVal1 {
 
 			enc.AppendString(v)
 
@@ -117,7 +117,7 @@ func (m *Types) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddArray("repeated_val1", zapcore.ArrayMarshalerFunc(repeated_val1ArrMarshaller))
 
 	repeated_val2ArrMarshaller := func(enc zapcore.ArrayEncoder) error {
-		for _, v := range m.RepeatedVal2 {
+		for _, v := range x.RepeatedVal2 {
 
 			enc.AppendString(v.String())
 
@@ -127,7 +127,7 @@ func (m *Types) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddArray("repeated_val2", zapcore.ArrayMarshalerFunc(repeated_val2ArrMarshaller))
 
 	repeated_val3ArrMarshaller := func(enc zapcore.ArrayEncoder) error {
-		for _, v := range m.RepeatedVal3 {
+		for _, v := range x.RepeatedVal3 {
 
 			if obj, ok := interface{}(v).(zapcore.ObjectMarshaler); ok {
 				enc.AppendObject(obj)
@@ -141,7 +141,7 @@ func (m *Types) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddArray("repeated_val3", zapcore.ArrayMarshalerFunc(repeated_val3ArrMarshaller))
 
 	repeated_empty_valArrMarshaller := func(enc zapcore.ArrayEncoder) error {
-		for _, v := range m.RepeatedEmptyVal {
+		for _, v := range x.RepeatedEmptyVal {
 
 			enc.AppendString(v)
 
@@ -150,53 +150,53 @@ func (m *Types) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	}
 	enc.AddArray("repeated_empty_val", zapcore.ArrayMarshalerFunc(repeated_empty_valArrMarshaller))
 
-	if obj, ok := interface{}(m.StructVal).(zapcore.ObjectMarshaler); ok {
+	if obj, ok := interface{}(x.StructVal).(zapcore.ObjectMarshaler); ok {
 		enc.AddObject("struct_val", obj)
 	} else {
-		enc.AddReflected("struct_val", m.StructVal)
+		enc.AddReflected("struct_val", x.StructVal)
 	}
 
 	return nil
 }
 
-func (m *OtherType1) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	if m == nil {
+func (x *OtherType1) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	if x == nil {
 		return nil
 	}
 
-	enc.AddString("other_string_val", m.OtherStringVal)
+	enc.AddString("other_string_val", x.OtherStringVal)
 
 	enc.AddString("other_secret_val", "[MASKED]")
 
 	return nil
 }
 
-func (m *OtherType2) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	if m == nil {
+func (x *OtherType2) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	if x == nil {
 		return nil
 	}
 
 	return nil
 }
 
-func (m *Types_NestedType) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	if m == nil {
+func (x *Types_NestedType) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	if x == nil {
 		return nil
 	}
 
-	enc.AddString("nested_string_val", m.NestedStringVal)
+	enc.AddString("nested_string_val", x.NestedStringVal)
 
 	enc.AddString("nested_secret_val", "[MASKED]")
 
 	return nil
 }
 
-func (m *OtherType2_NestedType) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	if m == nil {
+func (x *OtherType2_NestedType) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	if x == nil {
 		return nil
 	}
 
-	enc.AddString("nested_string_val", m.NestedStringVal)
+	enc.AddString("nested_string_val", x.NestedStringVal)
 
 	enc.AddString("nested_secret_val", "[MASKED]")
 
