@@ -121,8 +121,8 @@ var _ = zapcore.NewNopCore
 var _ = strconv.FormatInt
 
 {{ range .Messages }}
-func (m *{{ .Name }}) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	if m == nil {
+func (x *{{ .Name }}) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	if x == nil {
 		return nil
 	}
 
@@ -138,7 +138,7 @@ func (m *{{ .Name }}) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 		{{- /* repeated repeated -> NOT supported */ -}}
 
 		{{ .Name }}ArrMarshaller := func (enc zapcore.ArrayEncoder) error {
-	        for _, v := range m.{{ .Accessor }} {
+	        for _, v := range x.{{ .Accessor }} {
 				{{ if .Type.IsScalar }}
 	            	enc.Append{{ .Type.ScalarName }}(v)
 				{{ else if .Type.IsEnum }}
@@ -159,7 +159,7 @@ func (m *{{ .Name }}) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	{{ else if .IsMap }}
 		enc.AddObject("{{ .Name }}", zapcore.ObjectMarshalerFunc(func(enc zapcore.ObjectEncoder) error {
-			for k, v := range m.{{ .Accessor }} {
+			for k, v := range x.{{ .Accessor }} {
 				{{ if .MapType.ValueType.IsScalar }}
 					enc.Add{{ .MapType.ValueType.ScalarName }}({{ .MapType.KeyType.KeyToString "k" }}, v)
 				{{ else if .MapType.ValueType.IsEnum }}
@@ -179,17 +179,17 @@ func (m *{{ .Name }}) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	{{ else }}	
 		{{ if .Type.IsScalar }}
-			enc.Add{{ .Type.ScalarName }}("{{ .Name }}", m.{{ .Accessor }})
+			enc.Add{{ .Type.ScalarName }}("{{ .Name }}", x.{{ .Accessor }})
 		{{ else if .Type.IsEnum }}
-			enc.AddString("{{ .Name }}", m.{{ .Accessor }}.String())
+			enc.AddString("{{ .Name }}", x.{{ .Accessor }}.String())
 		{{ else if and .Type.IsMessage }}
-			if obj, ok := interface{}(m.{{ .Accessor }}).(zapcore.ObjectMarshaler); ok {
+			if obj, ok := interface{}(x.{{ .Accessor }}).(zapcore.ObjectMarshaler); ok {
 				enc.AddObject("{{ .Name }}", obj)
 			} else {
-				enc.AddReflected("{{ .Name }}", m.{{ .Accessor }})
+				enc.AddReflected("{{ .Name }}", x.{{ .Accessor }})
 			}
 		{{ else }}	
-			enc.AddReflected("{{ .Name }}", m.{{ .Accessor }})
+			enc.AddReflected("{{ .Name }}", x.{{ .Accessor }})
 		{{ end }}	
 	{{ end }}	
 {{ end }}	
