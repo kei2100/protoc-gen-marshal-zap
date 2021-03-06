@@ -27,4 +27,4 @@ test.proto:
 .PHONY: test.ci
 test.ci:
 	@which act > /dev/null 2>&1 || brew install nektos/tap/act
-	act -P ubuntu-latest=nektos/act-environments-ubuntu:18.04 -s GITHUB_TOKEN=$${GITHUB_TOKEN}
+	act -P ubuntu-latest=nektos/act-environments-ubuntu:18.04 -s GITHUB_TOKEN=$${GITHUB_TOKEN} -j test
