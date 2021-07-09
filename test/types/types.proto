@@ -77,6 +77,9 @@ message Types {
   // TODO wellknown types
   // https://developers.google.com/protocol-buffers/docs/reference/google.protobuf
   google.protobuf.Struct struct_val = 31;
+
+  // Camelcasing
+  string _String = 32;
 }
 
 message OtherType1 {
