@@ -15,7 +15,7 @@ See https://github.com/golang/protobuf#installation
 ## Installation
 
 ```
-GO111MODULE=off go get -u github.com/kei2100/protoc-gen-marshal-zap/plugin/protoc-gen-marshal-zap
+go install github.com/kei2100/protoc-gen-marshal-zap/plugin/protoc-gen-marshal-zap@latest
 ```
 
 ## Usage
