@@ -156,6 +156,8 @@ func (x *Types) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 		enc.AddReflected("struct_val", x.StructVal)
 	}
 
+	enc.AddString("_String", x.XString)
+
 	return nil
 }
 

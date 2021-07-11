@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/golang/protobuf/protoc-gen-go/generator"
 	marshal_zap "github.com/kei2100/protoc-gen-marshal-zap"
 	pgs "github.com/lyft/protoc-gen-star"
 	pgsgo "github.com/lyft/protoc-gen-star/lang/go"
@@ -97,7 +98,7 @@ func processFields(fields []pgs.Field) ([]*protoField, error) {
 		}
 		pf.IsMask = mask
 
-		pf.Accessor = field.Name().UpperCamelCase().String()
+		pf.Accessor = generator.CamelCase(field.Name().String())
 		if _, ok := reservedKeywords[pf.Accessor]; ok {
 			pf.Accessor += "_"
 		}

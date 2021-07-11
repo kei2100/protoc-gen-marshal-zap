@@ -78,6 +78,7 @@ func TestTypes_MarshalLogObject(t *testing.T) {
 				},
 			},
 		},
+		XString: "foo",
 	}
 	enc := zapcore.NewMapObjectEncoder()
 	err := m.MarshalLogObject(enc)
@@ -149,5 +150,6 @@ func TestTypes_MarshalLogObject(t *testing.T) {
 				},
 			},
 		},
+		"_String": "foo",
 	})
 }
