@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package simple;
+option go_package = "github.com/kei2100/protoc-gen-marshal-zap/example/simple";
 
 // If you want to use "marshal_zap.mask" option, import "marshal-zap.proto"
 import "marshal-zap.proto";
