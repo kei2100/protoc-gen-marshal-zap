@@ -2,8 +2,7 @@ package main
 
 import (
 	"fmt"
-
-	"github.com/golang/protobuf/protoc-gen-go/descriptor"
+	"google.golang.org/protobuf/types/descriptorpb"
 )
 
 type protoFile struct {
@@ -42,26 +41,26 @@ func (kt keyType) KeyToString(variableName string) string {
 	// https://developers.google.com/protocol-buffers/docs/proto3#maps
 	// where the key_type can be any integral or string type (so, any scalar type except for floating point types and bytes).
 	// Note that enum is not a valid key_type
-	switch descriptor.FieldDescriptorProto_Type(kt.protoType) {
-	case descriptor.FieldDescriptorProto_TYPE_STRING:
+	switch descriptorpb.FieldDescriptorProto_Type(kt.protoType) {
+	case descriptorpb.FieldDescriptorProto_TYPE_STRING:
 		return variableName
-	case descriptor.FieldDescriptorProto_TYPE_INT64, descriptor.FieldDescriptorProto_TYPE_SINT64, descriptor.FieldDescriptorProto_TYPE_SFIXED64:
+	case descriptorpb.FieldDescriptorProto_TYPE_INT64, descriptorpb.FieldDescriptorProto_TYPE_SINT64, descriptorpb.FieldDescriptorProto_TYPE_SFIXED64:
 		return fmt.Sprintf("strconv.FormatInt(%s, 10)", variableName)
-	case descriptor.FieldDescriptorProto_TYPE_UINT64, descriptor.FieldDescriptorProto_TYPE_FIXED64:
+	case descriptorpb.FieldDescriptorProto_TYPE_UINT64, descriptorpb.FieldDescriptorProto_TYPE_FIXED64:
 		return fmt.Sprintf("strconv.FormatUint(%s, 10)", variableName)
 	default:
 		return fmt.Sprintf("strconv.FormatInt(int64(%s), 10)", variableName)
 	}
 }
 
-type protoType descriptor.FieldDescriptorProto_Type
+type protoType descriptorpb.FieldDescriptorProto_Type
 
 func (t protoType) IsEnum() bool {
-	return t == protoType(descriptor.FieldDescriptorProto_TYPE_ENUM)
+	return t == protoType(descriptorpb.FieldDescriptorProto_TYPE_ENUM)
 }
 
 func (t protoType) IsMessage() bool {
-	return t == protoType(descriptor.FieldDescriptorProto_TYPE_MESSAGE)
+	return t == protoType(descriptorpb.FieldDescriptorProto_TYPE_MESSAGE)
 }
 
 func (t protoType) IsScalar() bool {
@@ -69,31 +68,31 @@ func (t protoType) IsScalar() bool {
 }
 
 func (t protoType) ScalarName() string {
-	switch descriptor.FieldDescriptorProto_Type(t) {
-	case descriptor.FieldDescriptorProto_TYPE_DOUBLE:
+	switch descriptorpb.FieldDescriptorProto_Type(t) {
+	case descriptorpb.FieldDescriptorProto_TYPE_DOUBLE:
 		return "Float64"
-	case descriptor.FieldDescriptorProto_TYPE_FLOAT:
+	case descriptorpb.FieldDescriptorProto_TYPE_FLOAT:
 		return "Float32"
-	case descriptor.FieldDescriptorProto_TYPE_INT32, descriptor.FieldDescriptorProto_TYPE_SINT32, descriptor.FieldDescriptorProto_TYPE_SFIXED32:
+	case descriptorpb.FieldDescriptorProto_TYPE_INT32, descriptorpb.FieldDescriptorProto_TYPE_SINT32, descriptorpb.FieldDescriptorProto_TYPE_SFIXED32:
 		return "Int32"
-	case descriptor.FieldDescriptorProto_TYPE_UINT32, descriptor.FieldDescriptorProto_TYPE_FIXED32:
+	case descriptorpb.FieldDescriptorProto_TYPE_UINT32, descriptorpb.FieldDescriptorProto_TYPE_FIXED32:
 		return "Uint32"
-	case descriptor.FieldDescriptorProto_TYPE_INT64, descriptor.FieldDescriptorProto_TYPE_SINT64, descriptor.FieldDescriptorProto_TYPE_SFIXED64:
+	case descriptorpb.FieldDescriptorProto_TYPE_INT64, descriptorpb.FieldDescriptorProto_TYPE_SINT64, descriptorpb.FieldDescriptorProto_TYPE_SFIXED64:
 		return "Int64"
-	case descriptor.FieldDescriptorProto_TYPE_UINT64, descriptor.FieldDescriptorProto_TYPE_FIXED64:
+	case descriptorpb.FieldDescriptorProto_TYPE_UINT64, descriptorpb.FieldDescriptorProto_TYPE_FIXED64:
 		return "Uint64"
-	case descriptor.FieldDescriptorProto_TYPE_BOOL:
+	case descriptorpb.FieldDescriptorProto_TYPE_BOOL:
 		return "Bool"
-	case descriptor.FieldDescriptorProto_TYPE_STRING:
+	case descriptorpb.FieldDescriptorProto_TYPE_STRING:
 		return "String"
-	case descriptor.FieldDescriptorProto_TYPE_BYTES:
+	case descriptorpb.FieldDescriptorProto_TYPE_BYTES:
 		return "Binary"
 	}
 	panic(fmt.Sprintf("unknown scalar type %s", t))
 }
 
 func (t protoType) String() string {
-	return descriptor.FieldDescriptorProto_Type(t).String()
+	return descriptorpb.FieldDescriptorProto_Type(t).String()
 }
 
 // # NOTE

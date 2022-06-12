@@ -3,10 +3,9 @@ package types
 import (
 	"testing"
 
-	structpb "github.com/golang/protobuf/ptypes/struct"
-
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap/zapcore"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestTypes_MarshalLogObject(t *testing.T) {
