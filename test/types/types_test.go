@@ -84,7 +84,7 @@ func TestTypes_MarshalLogObject(t *testing.T) {
 	if !assert.NoError(t, err) {
 		return
 	}
-	assert.EqualValues(t, enc.Fields, map[string]interface{}{
+	assert.EqualValues(t, map[string]interface{}{
 		"secret_val":   "[MASKED]",
 		"double_val":   float64(0.1),
 		"float_val":    float32(0.1),
@@ -150,5 +150,5 @@ func TestTypes_MarshalLogObject(t *testing.T) {
 			},
 		},
 		"_String": "foo",
-	})
+	}, enc.Fields)
 }
