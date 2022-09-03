@@ -17,8 +17,12 @@ install: proto
 	cd $(PLUGIN_DIR) && go install
 
 .PHONY: test
-test: install test.proto
-	go test -v $$(go list ./test/...)
+test: install test.clean test.proto
+	go test -race ./test/...
+
+.PHONY: test.clean
+test.clean:
+	@rm -f test/types/types.pb*.go
 
 .PHONY: test.proto
 test.proto:
