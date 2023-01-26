@@ -8,6 +8,7 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
+	"google.golang.org/protobuf/types/pluginpb"
 )
 
 const (
@@ -55,7 +56,6 @@ func generateListField(g *protogen.GeneratedFile, f *protogen.Field) {
 	g.P("return nil")
 	g.P("}")
 	g.P("enc.AddArray(\"", fname, "\",", g.QualifiedGoIdent(zapcorePkg.Ident("ArrayMarshalerFunc")), "(", fname, "ArrMarshaller))")
-	g.P()
 }
 
 func generateMapField(g *protogen.GeneratedFile, f *protogen.Field) {
@@ -97,7 +97,6 @@ func generateMapField(g *protogen.GeneratedFile, f *protogen.Field) {
 	g.P("}")
 	g.P("return nil")
 	g.P("}))")
-	g.P()
 }
 
 func generatePrimitiveField(g *protogen.GeneratedFile, f *protogen.Field) {
@@ -140,11 +139,28 @@ func generatePrimitiveField(g *protogen.GeneratedFile, f *protogen.Field) {
 	default:
 		g.P("enc.AddReflected(\"", fname, "\", x.", gname, ")")
 	}
-	g.P()
 }
 
 func isMasked(opts *descriptorpb.FieldOptions) bool {
 	return proto.GetExtension(opts, pbzap.E_Mask).(bool)
+}
+
+func handleExplicitPresence(g *protogen.GeneratedFile, f *protogen.Field, generateFunc func(*protogen.GeneratedFile, *protogen.Field)) {
+	// Omit the fields that are defined as `Explicit Presence` and the value is not present.
+	// https://protobuf.dev/programming-guides/field_presence/#presence-in-proto3-apis
+	switch {
+	case f.Oneof != nil && f.Desc.HasOptionalKeyword():
+		// handle optional fields
+		g.P("if x.", f.GoName, " != nil {")
+		defer g.P("}")
+	case f.Oneof != nil && !f.Desc.HasOptionalKeyword():
+		// handle oneof fields
+		// TODO
+	case f.Desc.Kind() == protoreflect.MessageKind || f.Desc.Kind() == protoreflect.GroupKind:
+		// handle message fields
+		// TODO
+	}
+	generateFunc(g, f)
 }
 
 func generateMessage(g *protogen.GeneratedFile, m *protogen.Message) {
@@ -157,14 +173,14 @@ func generateMessage(g *protogen.GeneratedFile, m *protogen.Message) {
 	for _, f := range m.Fields {
 		if isMasked(f.Desc.Options().(*descriptorpb.FieldOptions)) {
 			g.P("enc.AddString(\"", f.Desc.Name(), "\", \"[MASKED]\")")
-			g.P()
 		} else if f.Desc.IsList() {
 			generateListField(g, f)
 		} else if f.Desc.IsMap() {
 			generateMapField(g, f)
 		} else {
-			generatePrimitiveField(g, f)
+			handleExplicitPresence(g, f, generatePrimitiveField)
 		}
+		g.P()
 	}
 	g.P("return nil")
 	g.P("}")
@@ -200,11 +216,11 @@ func generateFile(gen *protogen.Plugin, file *protogen.File) *protogen.Generated
 
 func main() {
 	protogen.Options{}.Run(func(plugin *protogen.Plugin) error {
+		plugin.SupportedFeatures = uint64(pluginpb.CodeGeneratorResponse_FEATURE_PROTO3_OPTIONAL)
 		for _, file := range plugin.FilesByPath {
 			if !file.Generate {
 				continue
 			}
-
 			generateFile(plugin, file)
 		}
 		return nil
