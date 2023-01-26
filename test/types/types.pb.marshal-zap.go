@@ -141,6 +141,38 @@ func (x *Types) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	enc.AddString("_String", x.XString)
 
+	if x.OptionalVal != nil {
+		enc.AddString("optional_val", x.GetOptionalVal())
+	}
+
+	if x.OptionalNotPresentVal != nil {
+		enc.AddString("optional_not_present_val", x.GetOptionalNotPresentVal())
+	}
+
+	if x.OptionalEnum != nil {
+		enc.AddString("optional_enum", x.GetOptionalEnum().String())
+	}
+
+	if x.OptionalNotPresentEnum != nil {
+		enc.AddString("optional_not_present_enum", x.GetOptionalNotPresentEnum().String())
+	}
+
+	if x.OptionalMessage != nil {
+		if obj, ok := interface{}(x.GetOptionalMessage()).(zapcore.ObjectMarshaler); ok {
+			enc.AddObject("optional_message", obj)
+		} else {
+			enc.AddReflected("optional_message", x.GetOptionalMessage())
+		}
+	}
+
+	if x.OptionalNotPresentMessage != nil {
+		if obj, ok := interface{}(x.GetOptionalNotPresentMessage()).(zapcore.ObjectMarshaler); ok {
+			enc.AddObject("optional_not_present_message", obj)
+		} else {
+			enc.AddReflected("optional_not_present_message", x.GetOptionalNotPresentMessage())
+		}
+	}
+
 	return nil
 }
 
@@ -184,6 +216,16 @@ func (x *OtherType2_NestedType) MarshalLogObject(enc zapcore.ObjectEncoder) erro
 	enc.AddString("nested_string_val", x.NestedStringVal)
 
 	enc.AddString("nested_secret_val", "[MASKED]")
+
+	return nil
+}
+
+func (x *OtherType3) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	if x == nil {
+		return nil
+	}
+
+	enc.AddString("val", x.Val)
 
 	return nil
 }

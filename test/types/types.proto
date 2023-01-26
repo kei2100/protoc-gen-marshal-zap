@@ -80,6 +80,16 @@ message Types {
 
   // Camelcasing
   string _String = 32;
+
+  // Handle Explicit Presence
+  // https://protobuf.dev/programming-guides/field_presence/#presence-in-proto3-apis
+  optional string optional_val = 33;
+  optional string optional_not_present_val = 34;
+  optional Enum optional_enum = 35;
+  optional Enum optional_not_present_enum = 36;
+  optional OtherType3 optional_message = 37;
+  optional OtherType3 optional_not_present_message = 38;
+  // TODO not present message
 }
 
 message OtherType1 {
@@ -92,4 +102,8 @@ message OtherType2 {
     string nested_string_val = 1;
     string nested_secret_val = 2 [(marshal_zap.mask) = true];
   }
+}
+
+message OtherType3 {
+  string val = 1;
 }
