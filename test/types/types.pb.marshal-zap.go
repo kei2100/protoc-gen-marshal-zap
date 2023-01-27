@@ -66,11 +66,17 @@ func (x *Types) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 		enc.AddReflected("other_type_nested_type_val", x.OtherTypeNestedTypeVal)
 	}
 
-	enc.AddString("oneof_string_val", x.GetOneofStringVal())
+	if _, ok := x.GetOneofVal().(*Types_OneofStringVal); ok {
+		enc.AddString("oneof_string_val", x.GetOneofStringVal())
+	}
 
-	enc.AddInt64("oneof_int64_val", x.GetOneofInt64Val())
+	if _, ok := x.GetOneofVal().(*Types_OneofInt64Val); ok {
+		enc.AddInt64("oneof_int64_val", x.GetOneofInt64Val())
+	}
 
-	enc.AddBool("oneof_bool_val", x.GetOneofBoolVal())
+	if _, ok := x.GetOneofVal().(*Types_OneofBoolVal); ok {
+		enc.AddBool("oneof_bool_val", x.GetOneofBoolVal())
+	}
 
 	enc.AddObject("map_val1", zapcore.ObjectMarshalerFunc(func(enc zapcore.ObjectEncoder) error {
 		for k, v := range x.MapVal1 {
