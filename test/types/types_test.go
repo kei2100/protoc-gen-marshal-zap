@@ -121,8 +121,6 @@ func TestTypes_MarshalLogObject(t *testing.T) {
 			"nested_secret_val": "[MASKED]",
 		},
 		"oneof_string_val": "oneof_string",
-		"oneof_int64_val":  int64(0),
-		"oneof_bool_val":   false,
 		"map_val1": map[string]interface{}{
 			"foo": "bar",
 		},
@@ -163,6 +161,8 @@ func TestTypes_MarshalLogObject(t *testing.T) {
 		},
 	}, enc.Fields)
 
+	assert.NotContains(t, enc.Fields, "oneof_int64_val")
+	assert.NotContains(t, enc.Fields, "oneof_bool_val")
 	assert.NotContains(t, enc.Fields, "optional_not_present_val")
 	assert.NotContains(t, enc.Fields, "optional_not_present_enum")
 	assert.NotContains(t, enc.Fields, "optional_not_present_message")
