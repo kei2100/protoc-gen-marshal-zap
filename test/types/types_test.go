@@ -40,7 +40,7 @@ func TestTypes_MarshalLogObject(t *testing.T) {
 			NestedSecretVal: "other_nested_secret",
 		},
 		OneofVal: &Types_OneofStringVal{
-			OneofStringVal: "oneof_string",
+			OneofStringVal: "", // set zero value explicitly
 		},
 		MapVal1: map[string]string{
 			"foo": "bar",
@@ -120,7 +120,7 @@ func TestTypes_MarshalLogObject(t *testing.T) {
 			"nested_string_val": "other_nested_string",
 			"nested_secret_val": "[MASKED]",
 		},
-		"oneof_string_val": "oneof_string",
+		"oneof_string_val": "",
 		"map_val1": map[string]interface{}{
 			"foo": "bar",
 		},
