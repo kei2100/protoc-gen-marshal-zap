@@ -89,7 +89,8 @@ message Types {
   optional Enum optional_not_present_enum = 36;
   optional OtherType3 optional_message = 37;
   optional OtherType3 optional_not_present_message = 38;
-  // TODO not present message
+  OtherType3 present_message = 39;
+  OtherType3 not_present_message = 40;
 }
 
 message OtherType1 {

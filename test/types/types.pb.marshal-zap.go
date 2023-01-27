@@ -48,22 +48,28 @@ func (x *Types) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	enc.AddString("enum_val", x.EnumVal.String())
 
-	if obj, ok := interface{}(x.OtherTypeVal).(zapcore.ObjectMarshaler); ok {
-		enc.AddObject("other_type_val", obj)
-	} else {
-		enc.AddReflected("other_type_val", x.OtherTypeVal)
+	if x.OtherTypeVal != nil {
+		if obj, ok := interface{}(x.OtherTypeVal).(zapcore.ObjectMarshaler); ok {
+			enc.AddObject("other_type_val", obj)
+		} else {
+			enc.AddReflected("other_type_val", x.OtherTypeVal)
+		}
 	}
 
-	if obj, ok := interface{}(x.NestedTypeVal).(zapcore.ObjectMarshaler); ok {
-		enc.AddObject("nested_type_val", obj)
-	} else {
-		enc.AddReflected("nested_type_val", x.NestedTypeVal)
+	if x.NestedTypeVal != nil {
+		if obj, ok := interface{}(x.NestedTypeVal).(zapcore.ObjectMarshaler); ok {
+			enc.AddObject("nested_type_val", obj)
+		} else {
+			enc.AddReflected("nested_type_val", x.NestedTypeVal)
+		}
 	}
 
-	if obj, ok := interface{}(x.OtherTypeNestedTypeVal).(zapcore.ObjectMarshaler); ok {
-		enc.AddObject("other_type_nested_type_val", obj)
-	} else {
-		enc.AddReflected("other_type_nested_type_val", x.OtherTypeNestedTypeVal)
+	if x.OtherTypeNestedTypeVal != nil {
+		if obj, ok := interface{}(x.OtherTypeNestedTypeVal).(zapcore.ObjectMarshaler); ok {
+			enc.AddObject("other_type_nested_type_val", obj)
+		} else {
+			enc.AddReflected("other_type_nested_type_val", x.OtherTypeNestedTypeVal)
+		}
 	}
 
 	if _, ok := x.GetOneofVal().(*Types_OneofStringVal); ok {
@@ -139,10 +145,12 @@ func (x *Types) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	}
 	enc.AddArray("repeated_empty_val", zapcore.ArrayMarshalerFunc(repeated_empty_valArrMarshaller))
 
-	if obj, ok := interface{}(x.StructVal).(zapcore.ObjectMarshaler); ok {
-		enc.AddObject("struct_val", obj)
-	} else {
-		enc.AddReflected("struct_val", x.StructVal)
+	if x.StructVal != nil {
+		if obj, ok := interface{}(x.StructVal).(zapcore.ObjectMarshaler); ok {
+			enc.AddObject("struct_val", obj)
+		} else {
+			enc.AddReflected("struct_val", x.StructVal)
+		}
 	}
 
 	enc.AddString("_String", x.XString)
@@ -176,6 +184,22 @@ func (x *Types) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 			enc.AddObject("optional_not_present_message", obj)
 		} else {
 			enc.AddReflected("optional_not_present_message", x.GetOptionalNotPresentMessage())
+		}
+	}
+
+	if x.PresentMessage != nil {
+		if obj, ok := interface{}(x.PresentMessage).(zapcore.ObjectMarshaler); ok {
+			enc.AddObject("present_message", obj)
+		} else {
+			enc.AddReflected("present_message", x.PresentMessage)
+		}
+	}
+
+	if x.NotPresentMessage != nil {
+		if obj, ok := interface{}(x.NotPresentMessage).(zapcore.ObjectMarshaler); ok {
+			enc.AddObject("not_present_message", obj)
+		} else {
+			enc.AddReflected("not_present_message", x.NotPresentMessage)
 		}
 	}
 
