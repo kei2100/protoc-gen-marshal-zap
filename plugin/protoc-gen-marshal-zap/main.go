@@ -159,7 +159,8 @@ func handleExplicitPresence(g *protogen.GeneratedFile, f *protogen.Field, genera
 		defer g.P("}")
 	case f.Desc.Kind() == protoreflect.MessageKind || f.Desc.Kind() == protoreflect.GroupKind:
 		// handle message fields
-		// TODO
+		g.P("if x.", f.GoName, " != nil {")
+		defer g.P("}")
 	}
 	generateFunc(g, f)
 }

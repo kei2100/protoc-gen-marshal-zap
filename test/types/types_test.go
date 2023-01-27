@@ -84,6 +84,8 @@ func TestTypes_MarshalLogObject(t *testing.T) {
 		OptionalNotPresentEnum:    nil,
 		OptionalMessage:           &OtherType3{Val: "foo"},
 		OptionalNotPresentMessage: nil,
+		PresentMessage:            &OtherType3{Val: "foo"},
+		NotPresentMessage:         nil,
 	}
 	enc := zapcore.NewMapObjectEncoder()
 	err := m.MarshalLogObject(enc)
@@ -159,6 +161,9 @@ func TestTypes_MarshalLogObject(t *testing.T) {
 		"optional_message": map[string]interface{}{
 			"val": "foo",
 		},
+		"present_message": map[string]interface{}{
+			"val": "foo",
+		},
 	}, enc.Fields)
 
 	assert.NotContains(t, enc.Fields, "oneof_int64_val")
@@ -166,6 +171,7 @@ func TestTypes_MarshalLogObject(t *testing.T) {
 	assert.NotContains(t, enc.Fields, "optional_not_present_val")
 	assert.NotContains(t, enc.Fields, "optional_not_present_enum")
 	assert.NotContains(t, enc.Fields, "optional_not_present_message")
+	assert.NotContains(t, enc.Fields, "not_present_message")
 }
 
 func refs[T any](v T) *T {
