@@ -155,7 +155,7 @@ func handleExplicitPresence(g *protogen.GeneratedFile, f *protogen.Field, genera
 		defer g.P("}")
 	case f.Oneof != nil && !f.Desc.HasOptionalKeyword():
 		// handle oneof fields
-		g.P("if _, ok := x.Get", f.Oneof.GoName, "().(*Types_", f.GoName, "); ok {")
+		g.P("if _, ok := x.Get", f.Oneof.GoName, "().(*", f.GoIdent, "); ok {")
 		defer g.P("}")
 	case f.Desc.Kind() == protoreflect.MessageKind || f.Desc.Kind() == protoreflect.GroupKind:
 		// handle message fields
