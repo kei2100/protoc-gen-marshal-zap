@@ -1,0 +1,15 @@
+version: v1
+name: buf.build/kei2100/protoc-gen-marshal-zap
+
+lint:
+  use:
+    - MINIMAL
+  except:
+    - PACKAGE_DIRECTORY_MATCH
+breaking:
+  use:
+    - FILE
+build:
+  excludes:
+    - example
+    - test
