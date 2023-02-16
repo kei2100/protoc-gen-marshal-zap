@@ -35,7 +35,8 @@ message SimpleMessage {
 }
 ```
 
-Generate the code
+Generate the code by protoc (Alternatively, you can [use buf](#Using-Buf))
+
 ```
 PROTOC_GEN_MARSHAL_ZAP_VERSION=v0.1.x  # replace latest version
 protoc -I. -I$(go env GOMODCACHE)/github.com/kei2100/protoc-gen-marshal-zap@${PROTOC_GEN_MARSHAL_ZAP_VERSION} --go_out=. --marshal-zap_out=. simple.proto
@@ -71,6 +72,39 @@ func (x *SimpleMessage) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
         return nil
 }
+```
+
+## Using Buf
+
+marshal-zap [Buf](https://buf.build/) repository is here.
+
+https://buf.build/kei2100/protoc-gen-marshal-zap
+
+So, you can `buf generate` by setting up the following in your project.
+
+```yaml
+# buf.yaml
+version: v1
+deps:
+  - buf.build/kei2100/protoc-gen-marshal-zap
+breaking:
+  use:
+    - FILE
+lint:
+  use:
+    - DEFAULT
+```
+
+```yaml
+# buf.gen.yaml
+version: v1
+plugins:
+  - plugin: buf.build/protocolbuffers/go:v1.28.1
+    out: gen/go
+    opt: paths=source_relative
+  - plugin: marshal-zap
+    out: gen/go
+    opt: paths=source_relative
 ```
 
 ## Development
