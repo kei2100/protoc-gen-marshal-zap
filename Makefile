@@ -3,6 +3,11 @@ GIT_REPOSITORY = $(GIT_HOST)/kei2100/protoc-gen-marshal-zap
 PLUGIN_DIR = plugin/protoc-gen-marshal-zap
 PROTOC_OPT ?=
 
+.PHONY: lint
+lint:
+	go vet ./...
+	buf lint
+
 .PHONY: proto
 proto:
 	@$(MAKE) marshal-zap.pb.go
@@ -32,3 +37,7 @@ test.proto:
 test.ci:
 	@which act > /dev/null 2>&1 || brew install nektos/tap/act
 	act -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-20.04 -s GITHUB_TOKEN=$${GITHUB_TOKEN} -j test
+
+.PHONY: buf.push.tag
+buf.push.tag:
+	buf push --tag $(TAG)
