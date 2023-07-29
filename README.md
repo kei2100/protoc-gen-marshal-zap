@@ -2,7 +2,7 @@
 ![test](https://github.com/kei2100/protoc-gen-marshal-zap/workflows/test/badge.svg)
 ![CodeQL](https://github.com/kei2100/protoc-gen-marshal-zap/workflows/CodeQL/badge.svg)
 
-protoc-gen-marshal-zap is a protoc plugin to generate code that implements zapcore.ObjectMarshaler interface ([uber-go/zap](https://github.com/uber-go/zap)) to the protoc message.
+protoc-gen-marshal-zap is a protoc plugin for implementing zapcore.ObjectMarshaler interface ([uber-go/zap](https://github.com/uber-go/zap)) on proto messages.
 
 ## Requirements
 
@@ -30,8 +30,14 @@ package simple;
 import "marshal-zap.proto";
 
 message SimpleMessage {
+
   string message = 1;
+
   string secret_message = 2 [(marshal_zap.mask) = true];
+
+  // You can also use `debug_redact` option instead of `marshal_zap.mask` option
+  // cf. https://github.com/protocolbuffers/protobuf/blob/v22.0/src/google/protobuf/descriptor.proto#L632
+  string secret_message2 = 3 [debug_redact = true];
 }
 ```
 
@@ -40,6 +46,9 @@ Generate the code by protoc (Alternatively, you can [use buf](#Using-Buf))
 ```
 PROTOC_GEN_MARSHAL_ZAP_VERSION=v0.1.x  # replace latest version
 protoc -I. -I$(go env GOMODCACHE)/github.com/kei2100/protoc-gen-marshal-zap@${PROTOC_GEN_MARSHAL_ZAP_VERSION} --go_out=. --marshal-zap_out=. simple.proto
+
+# If you don't use `marshal_zap.option`, it's even simpler
+# protoc -I. --go_out=. --marshal-zap_out=. simple.proto
 ```
 
 Output results should be:
@@ -69,6 +78,8 @@ func (x *SimpleMessage) MarshalLogObject(enc zapcore.ObjectEncoder) error {
         enc.AddString("message", x.Message)
 
         enc.AddString("secret_message", "[MASKED]")
+
+        enc.AddString("secret_message2", "[MASKED]")
 
         return nil
 }

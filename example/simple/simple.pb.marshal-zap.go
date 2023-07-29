@@ -17,5 +17,7 @@ func (x *SimpleMessage) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	enc.AddString("secret_message", "[MASKED]")
 
+	enc.AddString("secret_message2", "[MASKED]")
+
 	return nil
 }

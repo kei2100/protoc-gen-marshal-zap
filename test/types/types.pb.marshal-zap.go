@@ -16,6 +16,8 @@ func (x *Types) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	enc.AddString("secret_val", "[MASKED]")
 
+	enc.AddString("secret_val2", "[MASKED]")
+
 	enc.AddFloat64("double_val", x.DoubleVal)
 
 	enc.AddFloat32("float_val", x.FloatVal)

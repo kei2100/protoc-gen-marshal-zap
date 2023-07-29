@@ -94,6 +94,7 @@ func TestTypes_MarshalLogObject(t *testing.T) {
 	}
 	assert.EqualValues(t, map[string]interface{}{
 		"secret_val":   "[MASKED]",
+		"secret_val2":  "[MASKED]",
 		"double_val":   float64(0.1),
 		"float_val":    float32(0.1),
 		"int32_val":    int32(1),

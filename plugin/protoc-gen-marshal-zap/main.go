@@ -142,7 +142,7 @@ func generatePrimitiveField(g *protogen.GeneratedFile, f *protogen.Field) {
 }
 
 func isMasked(opts *descriptorpb.FieldOptions) bool {
-	return proto.GetExtension(opts, pbzap.E_Mask).(bool)
+	return proto.GetExtension(opts, pbzap.E_Mask).(bool) || opts.GetDebugRedact()
 }
 
 func handleExplicitPresence(g *protogen.GeneratedFile, f *protogen.Field, generateFunc func(*protogen.GeneratedFile, *protogen.Field)) {
