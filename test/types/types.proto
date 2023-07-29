@@ -8,6 +8,7 @@ import "google/protobuf/struct.proto";
 
 message Types {
   string secret_val = 1 [(marshal_zap.mask) = true];
+  string secret_val2 = 41 [debug_redact = true];
 
   // Scalar Value Types
   // https://developers.google.com/protocol-buffers/docs/proto#scalar

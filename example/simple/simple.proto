@@ -9,4 +9,5 @@ import "marshal-zap.proto";
 message SimpleMessage {
   string message = 1;
   string secret_message = 2 [(marshal_zap.mask) = true];
+  string secret_message2 = 3 [debug_redact = true];
 }
