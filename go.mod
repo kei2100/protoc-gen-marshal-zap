@@ -3,7 +3,7 @@ module github.com/kei2100/protoc-gen-marshal-zap
 go 1.18
 
 require (
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	go.uber.org/zap v1.27.0
 	google.golang.org/protobuf v1.32.0
 )
