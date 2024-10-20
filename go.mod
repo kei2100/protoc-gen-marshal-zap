@@ -1,6 +1,8 @@
 module github.com/kei2100/protoc-gen-marshal-zap
 
-go 1.18
+go 1.21
+
+toolchain go1.22.4
 
 require (
 	github.com/stretchr/testify v1.9.0
