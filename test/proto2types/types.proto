@@ -1,0 +1,112 @@
+syntax = "proto2";
+
+package proto2types;
+
+option go_package = "github.com/kei2100/protoc-gen-marshal-zap/test/proto2types;proto2types";
+
+import "marshal-zap.proto";
+import "google/protobuf/struct.proto";
+
+message Types {
+  required string secret_val = 1 [(marshal_zap.mask) = true];
+  required string secret_val2 = 41 [debug_redact = true];
+
+  // Scalar Value Types
+  // https://developers.google.com/protocol-buffers/docs/proto#scalar
+  required double double_val = 2;
+  required float float_val = 3;
+  required int32 int32_val = 4;
+  required int64 int64_val = 5;
+  required uint32 uint32_val = 6;
+  required uint64 uint64_val = 7;
+  required sint32 sint32_val = 8;
+  required sint64 sint64_val = 9;
+  required fixed32 fixed32_val = 10;
+  required fixed64 fixed64_val = 11;
+  required sfixed32 sfixed32_val = 12;
+  required sfixed64 sfixed64_val = 13;
+  required bool bool_val = 14;
+  required string string_val = 15;
+  required bytes bytes_val = 16;
+
+  // Enumerations
+  // https://developers.google.com/protocol-buffers/docs/proto#enum
+  enum Enum {
+    ENUM_0 = 0;
+    ENUM_1 = 1;
+    ENUM_2 = 2;
+  }
+  required Enum enum_val = 17;
+
+  // Other Message Types
+  // https://developers.google.com/protocol-buffers/docs/proto#other
+  required OtherType1 other_type_val = 18;
+
+  // Nested Types
+  // https://developers.google.com/protocol-buffers/docs/proto#nested
+  message NestedType {
+    required string nested_string_val = 1;
+    required string nested_secret_val = 2 [(marshal_zap.mask) = true];
+  }
+  required NestedType nested_type_val = 19;
+  required OtherType2.NestedType other_type_nested_type_val = 20;
+
+  // Oneof
+  // https://developers.google.com/protocol-buffers/docs/proto#oneof
+  oneof oneof_val {
+    string oneof_string_val = 21;
+    int64 oneof_int64_val = 22;
+    bool oneof_bool_val = 23;
+  }
+
+  // Maps
+  // https://developers.google.com/protocol-buffers/docs/proto#updating
+  map<string, string> map_val1 = 24;
+  map<string, OtherType1> map_val2 = 25;
+  map<string, string> map_empty_val = 26;
+
+  // Repeated
+  // * Repeated Scalar Values
+  // * Repeated Enumerations
+  // * Repeated MessageTypes
+  // * (Repeated Maps -> NOT supported)
+  // * (Repeated Repeated -> NOT supported)
+  repeated string repeated_val1 = 27;
+  repeated Enum repeated_val2 = 28;
+  repeated OtherType1 repeated_val3 = 29;
+  repeated string repeated_empty_val = 30;
+
+  // TODO wellknown types
+  // https://developers.google.com/protocol-buffers/docs/reference/google.protobuf
+  required google.protobuf.Struct struct_val = 31;
+
+  // Camelcasing
+  required string _String = 32;
+
+  // Handle Explicit Presence
+  // https://protobuf.dev/programming-guides/field_presence/#presence-in-proto3-apis
+  optional string optional_val = 33;
+  optional string optional_not_present_val = 34;
+  optional Enum optional_enum = 35;
+  optional Enum optional_not_present_enum = 36;
+  optional OtherType3 optional_message = 37;
+  optional OtherType3 optional_not_present_message = 38;
+  required OtherType3 present_message = 39;
+  required OtherType3 not_present_message = 40;
+}
+
+message OtherType1 {
+  required string other_string_val = 1;
+  required string other_secret_val = 2 [(marshal_zap.mask) = true];
+}
+
+message OtherType2 {
+  message NestedType {
+    required string nested_string_val = 1;
+    required string nested_secret_val = 2 [(marshal_zap.mask) = true];
+  }
+}
+
+message OtherType3 {
+  required string val = 1;
+}

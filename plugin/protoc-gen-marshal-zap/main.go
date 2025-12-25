@@ -102,7 +102,7 @@ func generateMapField(g *protogen.GeneratedFile, f *protogen.Field) {
 func generatePrimitiveField(g *protogen.GeneratedFile, f *protogen.Field) {
 	fname := f.Desc.Name()
 	var gname string
-	if f.Oneof != nil {
+	if f.Desc.HasPresence() {
 		gname = fmt.Sprintf("Get%s()", f.GoName)
 	} else {
 		gname = f.GoName
@@ -157,8 +157,8 @@ func handleExplicitPresence(g *protogen.GeneratedFile, f *protogen.Field, genera
 		// handle oneof fields
 		g.P("if _, ok := x.Get", f.Oneof.GoName, "().(*", f.GoIdent, "); ok {")
 		defer g.P("}")
-	case f.Desc.Kind() == protoreflect.MessageKind || f.Desc.Kind() == protoreflect.GroupKind:
-		// handle message fields
+	case f.Desc.HasPresence():
+		// handle remaining fields with explicit presence fields
 		g.P("if x.", f.GoName, " != nil {")
 		defer g.P("}")
 	}
