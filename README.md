@@ -85,6 +85,26 @@ func (x *SimpleMessage) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 }
 ```
 
+## Well-Known Types
+
+Fields of the following [Well-Known Types](https://protobuf.dev/reference/protobuf/google.protobuf/) are encoded using zap's native encoder methods,
+so that the output is the same as if you had passed the equivalent Go value to zap.
+
+| Type | Generated code | Notes |
+|------|----------------|-------|
+| `google.protobuf.Timestamp` | `enc.AddTime(key, v.AsTime())` | Formatted by `EncoderConfig.EncodeTime` (e.g. epoch seconds with `zap.NewProductionEncoderConfig()`, RFC 3339 with `zapcore.ISO8601TimeEncoder`) |
+| `google.protobuf.Duration` | `enc.AddDuration(key, v.AsDuration())` | Formatted by `EncoderConfig.EncodeDuration`. Values outside the `time.Duration` range (about ±292 years) are saturated |
+| `google.protobuf.BoolValue`, `StringValue`, `BytesValue`, `Int32Value`, `Int64Value`, `UInt32Value`, `UInt64Value`, `FloatValue`, `DoubleValue` | `enc.AddBool(key, v.GetValue())` etc. | Unwrapped to the primitive value |
+| `google.protobuf.FieldMask` | `enc.AddArray(key, ...)` | Array of path strings, same as a `repeated string` field |
+| `google.protobuf.Empty` | `enc.AddObject(key, ...)` | Empty object `{}` |
+
+This applies to singular, `optional`, `oneof`, `repeated` and `map` value fields.
+A `nil` element in a `repeated` field or a `map` value is encoded as `null`.
+`repeated google.protobuf.BytesValue` elements are appended via `AppendByteString` (as a string, not base64) because `zapcore.ArrayEncoder` has no binary method; this is the same as a `repeated bytes` field.
+Fields marked with `marshal_zap.mask` or `debug_redact` are masked as usual.
+
+`google.protobuf.Any`, `Struct`, `Value` and `ListValue` are not specially handled and are encoded via `AddReflected` like any other message that does not implement `zapcore.ObjectMarshaler`.
+
 ## Using Buf
 
 marshal-zap [Buf](https://buf.build/) repository is here.

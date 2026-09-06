@@ -16,6 +16,71 @@ const (
 	fmtPkg     = protogen.GoImportPath("fmt")
 )
 
+// wellKnownType describes how to encode a google.protobuf well-known type.
+//
+// The principle is to produce the same output that zap would produce for the
+// equivalent Go value: e.g. Timestamp is encoded via AddTime so that it follows
+// the EncoderConfig.EncodeTime setting, and wrapper types are unwrapped to
+// their primitive values.
+type wellKnownType struct {
+	// addMethod is the zapcore.ObjectEncoder method name (e.g. "AddTime").
+	addMethod string
+	// appendMethod is the zapcore.ArrayEncoder method name (e.g. "AppendTime").
+	appendMethod string
+	// valueExpr returns the Go expression passed to the encoder method.
+	// v is the Go expression of the (non-nil) well-known type message.
+	valueExpr func(g *protogen.GeneratedFile, v string) string
+}
+
+func unwrapValue(_ *protogen.GeneratedFile, v string) string { return v + ".GetValue()" }
+
+func asTime(_ *protogen.GeneratedFile, v string) string { return v + ".AsTime()" }
+
+func asDuration(_ *protogen.GeneratedFile, v string) string { return v + ".AsDuration()" }
+
+// fieldMaskArray returns an ArrayMarshalerFunc that appends each path of the FieldMask.
+func fieldMaskArray(g *protogen.GeneratedFile, v string) string {
+	return fmt.Sprintf("%s(func(enc %s) error { for _, p := range %s.GetPaths() { enc.AppendString(p) }; return nil })",
+		g.QualifiedGoIdent(zapcorePkg.Ident("ArrayMarshalerFunc")),
+		g.QualifiedGoIdent(zapcorePkg.Ident("ArrayEncoder")),
+		v)
+}
+
+// emptyObject returns an ObjectMarshalerFunc that encodes nothing (`{}`).
+func emptyObject(g *protogen.GeneratedFile, _ string) string {
+	return fmt.Sprintf("%s(func(%s) error { return nil })",
+		g.QualifiedGoIdent(zapcorePkg.Ident("ObjectMarshalerFunc")),
+		g.QualifiedGoIdent(zapcorePkg.Ident("ObjectEncoder")))
+}
+
+// Any, Struct, Value and ListValue are intentionally not listed here and
+// fall back to the generic message handling (ObjectMarshaler / AddReflected).
+var wellKnownTypes = map[protoreflect.FullName]wellKnownType{
+	"google.protobuf.Timestamp":   {addMethod: "AddTime", appendMethod: "AppendTime", valueExpr: asTime},
+	"google.protobuf.Duration":    {addMethod: "AddDuration", appendMethod: "AppendDuration", valueExpr: asDuration},
+	"google.protobuf.BoolValue":   {addMethod: "AddBool", appendMethod: "AppendBool", valueExpr: unwrapValue},
+	"google.protobuf.StringValue": {addMethod: "AddString", appendMethod: "AppendString", valueExpr: unwrapValue},
+	// zapcore.ArrayEncoder has no AppendBinary, so repeated elements are appended as a string
+	// (same as a `repeated bytes` field).
+	"google.protobuf.BytesValue":  {addMethod: "AddBinary", appendMethod: "AppendByteString", valueExpr: unwrapValue},
+	"google.protobuf.Int32Value":  {addMethod: "AddInt32", appendMethod: "AppendInt32", valueExpr: unwrapValue},
+	"google.protobuf.Int64Value":  {addMethod: "AddInt64", appendMethod: "AppendInt64", valueExpr: unwrapValue},
+	"google.protobuf.UInt32Value": {addMethod: "AddUint32", appendMethod: "AppendUint32", valueExpr: unwrapValue},
+	"google.protobuf.UInt64Value": {addMethod: "AddUint64", appendMethod: "AppendUint64", valueExpr: unwrapValue},
+	"google.protobuf.FloatValue":  {addMethod: "AddFloat32", appendMethod: "AppendFloat32", valueExpr: unwrapValue},
+	"google.protobuf.DoubleValue": {addMethod: "AddFloat64", appendMethod: "AppendFloat64", valueExpr: unwrapValue},
+	// FieldMask -> array of path strings, same as a `repeated string` field.
+	"google.protobuf.FieldMask": {addMethod: "AddArray", appendMethod: "AppendArray", valueExpr: fieldMaskArray},
+	// Empty -> empty object `{}`.
+	"google.protobuf.Empty": {addMethod: "AddObject", appendMethod: "AppendObject", valueExpr: emptyObject},
+}
+
+// lookupWellKnownType returns the well-known type definition for md, if any.
+func lookupWellKnownType(md protoreflect.MessageDescriptor) (wellKnownType, bool) {
+	wkt, ok := wellKnownTypes[md.FullName()]
+	return wkt, ok
+}
+
 func generateListField(g *protogen.GeneratedFile, f *protogen.Field) {
 	fname := f.Desc.Name()
 	g.P(fname, "ArrMarshaller := func(enc ", g.QualifiedGoIdent(zapcorePkg.Ident("ArrayEncoder")), ") error {")
@@ -42,6 +107,14 @@ func generateListField(g *protogen.GeneratedFile, f *protogen.Field) {
 	case protoreflect.GroupKind:
 		g.P("enc.AppendReflected(v)")
 	case protoreflect.MessageKind:
+		if wkt, ok := lookupWellKnownType(f.Desc.Message()); ok {
+			g.P("if v != nil {")
+			g.P("enc.", wkt.appendMethod, "(", wkt.valueExpr(g, "v"), ")")
+			g.P("} else {")
+			g.P("enc.AppendReflected(nil)")
+			g.P("}")
+			break
+		}
 		g.P("if obj, ok := interface{}(v).(", g.QualifiedGoIdent(zapcorePkg.Ident("ObjectMarshaler")), "); ok {")
 		g.P("enc.AppendObject(obj)")
 		g.P("} else {")
@@ -84,6 +157,15 @@ func generateMapField(g *protogen.GeneratedFile, f *protogen.Field) {
 	case protoreflect.GroupKind:
 		g.P("enc.AddReflected(", g.QualifiedGoIdent(fmtPkg.Ident("Sprintf")), "(\"%v\", k), v)")
 	case protoreflect.MessageKind:
+		if wkt, ok := lookupWellKnownType(f.Desc.MapValue().Message()); ok {
+			key := g.QualifiedGoIdent(fmtPkg.Ident("Sprintf")) + "(\"%v\", k)"
+			g.P("if v != nil {")
+			g.P("enc.", wkt.addMethod, "(", key, ", ", wkt.valueExpr(g, "v"), ")")
+			g.P("} else {")
+			g.P("enc.AddReflected(", key, ", nil)")
+			g.P("}")
+			break
+		}
 		g.P("if obj, ok := interface{}(v).(", g.QualifiedGoIdent(zapcorePkg.Ident("ObjectMarshaler")), "); ok {")
 		g.P("enc.AddObject(", g.QualifiedGoIdent(fmtPkg.Ident("Sprintf")), "(\"%v\", k), obj)")
 		g.P("} else {")
@@ -129,6 +211,13 @@ func generatePrimitiveField(g *protogen.GeneratedFile, f *protogen.Field) {
 	case protoreflect.GroupKind:
 		g.P("enc.AddReflected(\"", fname, "\", x.", gname, ")")
 	case protoreflect.MessageKind:
+		if wkt, ok := lookupWellKnownType(f.Desc.Message()); ok {
+			// nil is guarded by handleExplicitPresence for singular and optional fields.
+			// For a oneof member, only the wrapper type is checked; a nil inner pointer is
+			// treated as the zero message (AsTime, AsDuration, GetValue and GetPaths are nil-safe).
+			g.P("enc.", wkt.addMethod, "(\"", fname, "\", ", wkt.valueExpr(g, "x."+gname), ")")
+			break
+		}
 		g.P("if obj, ok := interface{}(x.", gname, ").(", g.QualifiedGoIdent(zapcorePkg.Ident("ObjectMarshaler")), "); ok {")
 		g.P("enc.AddObject(\"", fname, "\", obj)")
 		g.P("} else {")
