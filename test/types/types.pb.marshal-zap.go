@@ -261,3 +261,488 @@ func (x *OtherType3) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	return nil
 }
+
+func (x *WellKnownTypes) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	if x == nil {
+		return nil
+	}
+
+	if x.TimestampVal != nil {
+		enc.AddTime("timestamp_val", x.TimestampVal.AsTime())
+	}
+
+	if x.DurationVal != nil {
+		enc.AddDuration("duration_val", x.DurationVal.AsDuration())
+	}
+
+	if x.BoolValueVal != nil {
+		enc.AddBool("bool_value_val", x.BoolValueVal.GetValue())
+	}
+
+	if x.StringValueVal != nil {
+		enc.AddString("string_value_val", x.StringValueVal.GetValue())
+	}
+
+	if x.BytesValueVal != nil {
+		enc.AddBinary("bytes_value_val", x.BytesValueVal.GetValue())
+	}
+
+	if x.Int32ValueVal != nil {
+		enc.AddInt32("int32_value_val", x.Int32ValueVal.GetValue())
+	}
+
+	if x.Int64ValueVal != nil {
+		enc.AddInt64("int64_value_val", x.Int64ValueVal.GetValue())
+	}
+
+	if x.Uint32ValueVal != nil {
+		enc.AddUint32("uint32_value_val", x.Uint32ValueVal.GetValue())
+	}
+
+	if x.Uint64ValueVal != nil {
+		enc.AddUint64("uint64_value_val", x.Uint64ValueVal.GetValue())
+	}
+
+	if x.FloatValueVal != nil {
+		enc.AddFloat32("float_value_val", x.FloatValueVal.GetValue())
+	}
+
+	if x.DoubleValueVal != nil {
+		enc.AddFloat64("double_value_val", x.DoubleValueVal.GetValue())
+	}
+
+	if x.FieldMaskVal != nil {
+		enc.AddArray("field_mask_val", zapcore.ArrayMarshalerFunc(func(enc zapcore.ArrayEncoder) error {
+			for _, p := range x.FieldMaskVal.GetPaths() {
+				enc.AppendString(p)
+			}
+			return nil
+		}))
+	}
+
+	if x.EmptyVal != nil {
+		enc.AddObject("empty_val", zapcore.ObjectMarshalerFunc(func(zapcore.ObjectEncoder) error { return nil }))
+	}
+
+	if x.AnyVal != nil {
+		if obj, ok := interface{}(x.AnyVal).(zapcore.ObjectMarshaler); ok {
+			enc.AddObject("any_val", obj)
+		} else {
+			enc.AddReflected("any_val", x.AnyVal)
+		}
+	}
+
+	if x.StructVal != nil {
+		if obj, ok := interface{}(x.StructVal).(zapcore.ObjectMarshaler); ok {
+			enc.AddObject("struct_val", obj)
+		} else {
+			enc.AddReflected("struct_val", x.StructVal)
+		}
+	}
+
+	if x.ValueVal != nil {
+		if obj, ok := interface{}(x.ValueVal).(zapcore.ObjectMarshaler); ok {
+			enc.AddObject("value_val", obj)
+		} else {
+			enc.AddReflected("value_val", x.ValueVal)
+		}
+	}
+
+	if x.ListValueVal != nil {
+		if obj, ok := interface{}(x.ListValueVal).(zapcore.ObjectMarshaler); ok {
+			enc.AddObject("list_value_val", obj)
+		} else {
+			enc.AddReflected("list_value_val", x.ListValueVal)
+		}
+	}
+
+	if x.NotPresentTimestampVal != nil {
+		enc.AddTime("not_present_timestamp_val", x.NotPresentTimestampVal.AsTime())
+	}
+
+	if x.NotPresentStringValueVal != nil {
+		enc.AddString("not_present_string_value_val", x.NotPresentStringValueVal.GetValue())
+	}
+
+	if x.NotPresentEmptyVal != nil {
+		enc.AddObject("not_present_empty_val", zapcore.ObjectMarshalerFunc(func(zapcore.ObjectEncoder) error { return nil }))
+	}
+
+	enc.AddString("masked_timestamp_val", "[MASKED]")
+
+	repeated_timestamp_valArrMarshaller := func(enc zapcore.ArrayEncoder) error {
+		for _, v := range x.RepeatedTimestampVal {
+			if v != nil {
+				enc.AppendTime(v.AsTime())
+			} else {
+				enc.AppendReflected(nil)
+			}
+		}
+		return nil
+	}
+	enc.AddArray("repeated_timestamp_val", zapcore.ArrayMarshalerFunc(repeated_timestamp_valArrMarshaller))
+
+	repeated_duration_valArrMarshaller := func(enc zapcore.ArrayEncoder) error {
+		for _, v := range x.RepeatedDurationVal {
+			if v != nil {
+				enc.AppendDuration(v.AsDuration())
+			} else {
+				enc.AppendReflected(nil)
+			}
+		}
+		return nil
+	}
+	enc.AddArray("repeated_duration_val", zapcore.ArrayMarshalerFunc(repeated_duration_valArrMarshaller))
+
+	repeated_bool_value_valArrMarshaller := func(enc zapcore.ArrayEncoder) error {
+		for _, v := range x.RepeatedBoolValueVal {
+			if v != nil {
+				enc.AppendBool(v.GetValue())
+			} else {
+				enc.AppendReflected(nil)
+			}
+		}
+		return nil
+	}
+	enc.AddArray("repeated_bool_value_val", zapcore.ArrayMarshalerFunc(repeated_bool_value_valArrMarshaller))
+
+	repeated_string_value_valArrMarshaller := func(enc zapcore.ArrayEncoder) error {
+		for _, v := range x.RepeatedStringValueVal {
+			if v != nil {
+				enc.AppendString(v.GetValue())
+			} else {
+				enc.AppendReflected(nil)
+			}
+		}
+		return nil
+	}
+	enc.AddArray("repeated_string_value_val", zapcore.ArrayMarshalerFunc(repeated_string_value_valArrMarshaller))
+
+	repeated_bytes_value_valArrMarshaller := func(enc zapcore.ArrayEncoder) error {
+		for _, v := range x.RepeatedBytesValueVal {
+			if v != nil {
+				enc.AppendByteString(v.GetValue())
+			} else {
+				enc.AppendReflected(nil)
+			}
+		}
+		return nil
+	}
+	enc.AddArray("repeated_bytes_value_val", zapcore.ArrayMarshalerFunc(repeated_bytes_value_valArrMarshaller))
+
+	repeated_int32_value_valArrMarshaller := func(enc zapcore.ArrayEncoder) error {
+		for _, v := range x.RepeatedInt32ValueVal {
+			if v != nil {
+				enc.AppendInt32(v.GetValue())
+			} else {
+				enc.AppendReflected(nil)
+			}
+		}
+		return nil
+	}
+	enc.AddArray("repeated_int32_value_val", zapcore.ArrayMarshalerFunc(repeated_int32_value_valArrMarshaller))
+
+	repeated_int64_value_valArrMarshaller := func(enc zapcore.ArrayEncoder) error {
+		for _, v := range x.RepeatedInt64ValueVal {
+			if v != nil {
+				enc.AppendInt64(v.GetValue())
+			} else {
+				enc.AppendReflected(nil)
+			}
+		}
+		return nil
+	}
+	enc.AddArray("repeated_int64_value_val", zapcore.ArrayMarshalerFunc(repeated_int64_value_valArrMarshaller))
+
+	repeated_uint32_value_valArrMarshaller := func(enc zapcore.ArrayEncoder) error {
+		for _, v := range x.RepeatedUint32ValueVal {
+			if v != nil {
+				enc.AppendUint32(v.GetValue())
+			} else {
+				enc.AppendReflected(nil)
+			}
+		}
+		return nil
+	}
+	enc.AddArray("repeated_uint32_value_val", zapcore.ArrayMarshalerFunc(repeated_uint32_value_valArrMarshaller))
+
+	repeated_uint64_value_valArrMarshaller := func(enc zapcore.ArrayEncoder) error {
+		for _, v := range x.RepeatedUint64ValueVal {
+			if v != nil {
+				enc.AppendUint64(v.GetValue())
+			} else {
+				enc.AppendReflected(nil)
+			}
+		}
+		return nil
+	}
+	enc.AddArray("repeated_uint64_value_val", zapcore.ArrayMarshalerFunc(repeated_uint64_value_valArrMarshaller))
+
+	repeated_float_value_valArrMarshaller := func(enc zapcore.ArrayEncoder) error {
+		for _, v := range x.RepeatedFloatValueVal {
+			if v != nil {
+				enc.AppendFloat32(v.GetValue())
+			} else {
+				enc.AppendReflected(nil)
+			}
+		}
+		return nil
+	}
+	enc.AddArray("repeated_float_value_val", zapcore.ArrayMarshalerFunc(repeated_float_value_valArrMarshaller))
+
+	repeated_double_value_valArrMarshaller := func(enc zapcore.ArrayEncoder) error {
+		for _, v := range x.RepeatedDoubleValueVal {
+			if v != nil {
+				enc.AppendFloat64(v.GetValue())
+			} else {
+				enc.AppendReflected(nil)
+			}
+		}
+		return nil
+	}
+	enc.AddArray("repeated_double_value_val", zapcore.ArrayMarshalerFunc(repeated_double_value_valArrMarshaller))
+
+	repeated_field_mask_valArrMarshaller := func(enc zapcore.ArrayEncoder) error {
+		for _, v := range x.RepeatedFieldMaskVal {
+			if v != nil {
+				enc.AppendArray(zapcore.ArrayMarshalerFunc(func(enc zapcore.ArrayEncoder) error {
+					for _, p := range v.GetPaths() {
+						enc.AppendString(p)
+					}
+					return nil
+				}))
+			} else {
+				enc.AppendReflected(nil)
+			}
+		}
+		return nil
+	}
+	enc.AddArray("repeated_field_mask_val", zapcore.ArrayMarshalerFunc(repeated_field_mask_valArrMarshaller))
+
+	repeated_empty_valArrMarshaller := func(enc zapcore.ArrayEncoder) error {
+		for _, v := range x.RepeatedEmptyVal {
+			if v != nil {
+				enc.AppendObject(zapcore.ObjectMarshalerFunc(func(zapcore.ObjectEncoder) error { return nil }))
+			} else {
+				enc.AppendReflected(nil)
+			}
+		}
+		return nil
+	}
+	enc.AddArray("repeated_empty_val", zapcore.ArrayMarshalerFunc(repeated_empty_valArrMarshaller))
+
+	enc.AddObject("map_timestamp_val", zapcore.ObjectMarshalerFunc(func(enc zapcore.ObjectEncoder) error {
+		for k, v := range x.MapTimestampVal {
+			if v != nil {
+				enc.AddTime(fmt.Sprintf("%v", k), v.AsTime())
+			} else {
+				enc.AddReflected(fmt.Sprintf("%v", k), nil)
+			}
+		}
+		return nil
+	}))
+
+	enc.AddObject("map_duration_val", zapcore.ObjectMarshalerFunc(func(enc zapcore.ObjectEncoder) error {
+		for k, v := range x.MapDurationVal {
+			if v != nil {
+				enc.AddDuration(fmt.Sprintf("%v", k), v.AsDuration())
+			} else {
+				enc.AddReflected(fmt.Sprintf("%v", k), nil)
+			}
+		}
+		return nil
+	}))
+
+	enc.AddObject("map_bool_value_val", zapcore.ObjectMarshalerFunc(func(enc zapcore.ObjectEncoder) error {
+		for k, v := range x.MapBoolValueVal {
+			if v != nil {
+				enc.AddBool(fmt.Sprintf("%v", k), v.GetValue())
+			} else {
+				enc.AddReflected(fmt.Sprintf("%v", k), nil)
+			}
+		}
+		return nil
+	}))
+
+	enc.AddObject("map_string_value_val", zapcore.ObjectMarshalerFunc(func(enc zapcore.ObjectEncoder) error {
+		for k, v := range x.MapStringValueVal {
+			if v != nil {
+				enc.AddString(fmt.Sprintf("%v", k), v.GetValue())
+			} else {
+				enc.AddReflected(fmt.Sprintf("%v", k), nil)
+			}
+		}
+		return nil
+	}))
+
+	enc.AddObject("map_bytes_value_val", zapcore.ObjectMarshalerFunc(func(enc zapcore.ObjectEncoder) error {
+		for k, v := range x.MapBytesValueVal {
+			if v != nil {
+				enc.AddBinary(fmt.Sprintf("%v", k), v.GetValue())
+			} else {
+				enc.AddReflected(fmt.Sprintf("%v", k), nil)
+			}
+		}
+		return nil
+	}))
+
+	enc.AddObject("map_int32_value_val", zapcore.ObjectMarshalerFunc(func(enc zapcore.ObjectEncoder) error {
+		for k, v := range x.MapInt32ValueVal {
+			if v != nil {
+				enc.AddInt32(fmt.Sprintf("%v", k), v.GetValue())
+			} else {
+				enc.AddReflected(fmt.Sprintf("%v", k), nil)
+			}
+		}
+		return nil
+	}))
+
+	enc.AddObject("map_int64_value_val", zapcore.ObjectMarshalerFunc(func(enc zapcore.ObjectEncoder) error {
+		for k, v := range x.MapInt64ValueVal {
+			if v != nil {
+				enc.AddInt64(fmt.Sprintf("%v", k), v.GetValue())
+			} else {
+				enc.AddReflected(fmt.Sprintf("%v", k), nil)
+			}
+		}
+		return nil
+	}))
+
+	enc.AddObject("map_uint32_value_val", zapcore.ObjectMarshalerFunc(func(enc zapcore.ObjectEncoder) error {
+		for k, v := range x.MapUint32ValueVal {
+			if v != nil {
+				enc.AddUint32(fmt.Sprintf("%v", k), v.GetValue())
+			} else {
+				enc.AddReflected(fmt.Sprintf("%v", k), nil)
+			}
+		}
+		return nil
+	}))
+
+	enc.AddObject("map_uint64_value_val", zapcore.ObjectMarshalerFunc(func(enc zapcore.ObjectEncoder) error {
+		for k, v := range x.MapUint64ValueVal {
+			if v != nil {
+				enc.AddUint64(fmt.Sprintf("%v", k), v.GetValue())
+			} else {
+				enc.AddReflected(fmt.Sprintf("%v", k), nil)
+			}
+		}
+		return nil
+	}))
+
+	enc.AddObject("map_float_value_val", zapcore.ObjectMarshalerFunc(func(enc zapcore.ObjectEncoder) error {
+		for k, v := range x.MapFloatValueVal {
+			if v != nil {
+				enc.AddFloat32(fmt.Sprintf("%v", k), v.GetValue())
+			} else {
+				enc.AddReflected(fmt.Sprintf("%v", k), nil)
+			}
+		}
+		return nil
+	}))
+
+	enc.AddObject("map_double_value_val", zapcore.ObjectMarshalerFunc(func(enc zapcore.ObjectEncoder) error {
+		for k, v := range x.MapDoubleValueVal {
+			if v != nil {
+				enc.AddFloat64(fmt.Sprintf("%v", k), v.GetValue())
+			} else {
+				enc.AddReflected(fmt.Sprintf("%v", k), nil)
+			}
+		}
+		return nil
+	}))
+
+	enc.AddObject("map_field_mask_val", zapcore.ObjectMarshalerFunc(func(enc zapcore.ObjectEncoder) error {
+		for k, v := range x.MapFieldMaskVal {
+			if v != nil {
+				enc.AddArray(fmt.Sprintf("%v", k), zapcore.ArrayMarshalerFunc(func(enc zapcore.ArrayEncoder) error {
+					for _, p := range v.GetPaths() {
+						enc.AppendString(p)
+					}
+					return nil
+				}))
+			} else {
+				enc.AddReflected(fmt.Sprintf("%v", k), nil)
+			}
+		}
+		return nil
+	}))
+
+	enc.AddObject("map_empty_val", zapcore.ObjectMarshalerFunc(func(enc zapcore.ObjectEncoder) error {
+		for k, v := range x.MapEmptyVal {
+			if v != nil {
+				enc.AddObject(fmt.Sprintf("%v", k), zapcore.ObjectMarshalerFunc(func(zapcore.ObjectEncoder) error { return nil }))
+			} else {
+				enc.AddReflected(fmt.Sprintf("%v", k), nil)
+			}
+		}
+		return nil
+	}))
+
+	if _, ok := x.GetOneofVal().(*WellKnownTypes_OneofTimestampVal); ok {
+		enc.AddTime("oneof_timestamp_val", x.GetOneofTimestampVal().AsTime())
+	}
+
+	if _, ok := x.GetOneofVal().(*WellKnownTypes_OneofDurationVal); ok {
+		enc.AddDuration("oneof_duration_val", x.GetOneofDurationVal().AsDuration())
+	}
+
+	if _, ok := x.GetOneofVal().(*WellKnownTypes_OneofBoolValueVal); ok {
+		enc.AddBool("oneof_bool_value_val", x.GetOneofBoolValueVal().GetValue())
+	}
+
+	if _, ok := x.GetOneofVal().(*WellKnownTypes_OneofStringValueVal); ok {
+		enc.AddString("oneof_string_value_val", x.GetOneofStringValueVal().GetValue())
+	}
+
+	if _, ok := x.GetOneofVal().(*WellKnownTypes_OneofBytesValueVal); ok {
+		enc.AddBinary("oneof_bytes_value_val", x.GetOneofBytesValueVal().GetValue())
+	}
+
+	if _, ok := x.GetOneofVal().(*WellKnownTypes_OneofInt32ValueVal); ok {
+		enc.AddInt32("oneof_int32_value_val", x.GetOneofInt32ValueVal().GetValue())
+	}
+
+	if _, ok := x.GetOneofVal().(*WellKnownTypes_OneofInt64ValueVal); ok {
+		enc.AddInt64("oneof_int64_value_val", x.GetOneofInt64ValueVal().GetValue())
+	}
+
+	if _, ok := x.GetOneofVal().(*WellKnownTypes_OneofUint32ValueVal); ok {
+		enc.AddUint32("oneof_uint32_value_val", x.GetOneofUint32ValueVal().GetValue())
+	}
+
+	if _, ok := x.GetOneofVal().(*WellKnownTypes_OneofUint64ValueVal); ok {
+		enc.AddUint64("oneof_uint64_value_val", x.GetOneofUint64ValueVal().GetValue())
+	}
+
+	if _, ok := x.GetOneofVal().(*WellKnownTypes_OneofFloatValueVal); ok {
+		enc.AddFloat32("oneof_float_value_val", x.GetOneofFloatValueVal().GetValue())
+	}
+
+	if _, ok := x.GetOneofVal().(*WellKnownTypes_OneofDoubleValueVal); ok {
+		enc.AddFloat64("oneof_double_value_val", x.GetOneofDoubleValueVal().GetValue())
+	}
+
+	if _, ok := x.GetOneofVal().(*WellKnownTypes_OneofFieldMaskVal); ok {
+		enc.AddArray("oneof_field_mask_val", zapcore.ArrayMarshalerFunc(func(enc zapcore.ArrayEncoder) error {
+			for _, p := range x.GetOneofFieldMaskVal().GetPaths() {
+				enc.AppendString(p)
+			}
+			return nil
+		}))
+	}
+
+	if _, ok := x.GetOneofVal().(*WellKnownTypes_OneofEmptyVal); ok {
+		enc.AddObject("oneof_empty_val", zapcore.ObjectMarshalerFunc(func(zapcore.ObjectEncoder) error { return nil }))
+	}
+
+	if x.OptionalTimestampVal != nil {
+		enc.AddTime("optional_timestamp_val", x.GetOptionalTimestampVal().AsTime())
+	}
+
+	if x.OptionalNotPresentTimestampVal != nil {
+		enc.AddTime("optional_not_present_timestamp_val", x.GetOptionalNotPresentTimestampVal().AsTime())
+	}
+
+	return nil
+}

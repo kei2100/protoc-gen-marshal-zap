@@ -5,6 +5,12 @@ option go_package = "github.com/kei2100/protoc-gen-marshal-zap/test/types;types"
 
 import "marshal-zap.proto";
 import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/any.proto";
 
 message Types {
   string secret_val = 1 [(marshal_zap.mask) = true];
@@ -75,8 +81,8 @@ message Types {
   repeated OtherType1 repeated_val3 = 29;
   repeated string repeated_empty_val = 30;
 
-  // TODO wellknown types
-  // https://developers.google.com/protocol-buffers/docs/reference/google.protobuf
+  // Well-Known Types are covered by the WellKnownTypes message below.
+  // Struct is kept here to verify the generic message fallback.
   google.protobuf.Struct struct_val = 31;
 
   // Camelcasing
@@ -108,4 +114,88 @@ message OtherType2 {
 
 message OtherType3 {
   string val = 1;
+}
+
+// Well-Known Types
+// https://protobuf.dev/reference/protobuf/google.protobuf/
+message WellKnownTypes {
+  // Singular
+  google.protobuf.Timestamp timestamp_val = 1;
+  google.protobuf.Duration duration_val = 2;
+  google.protobuf.BoolValue bool_value_val = 3;
+  google.protobuf.StringValue string_value_val = 4;
+  google.protobuf.BytesValue bytes_value_val = 5;
+  google.protobuf.Int32Value int32_value_val = 6;
+  google.protobuf.Int64Value int64_value_val = 7;
+  google.protobuf.UInt32Value uint32_value_val = 8;
+  google.protobuf.UInt64Value uint64_value_val = 9;
+  google.protobuf.FloatValue float_value_val = 10;
+  google.protobuf.DoubleValue double_value_val = 11;
+  google.protobuf.FieldMask field_mask_val = 12;
+  google.protobuf.Empty empty_val = 13;
+
+  // Not specially handled (generic message fallback)
+  google.protobuf.Any any_val = 14;
+  google.protobuf.Struct struct_val = 15;
+  google.protobuf.Value value_val = 16;
+  google.protobuf.ListValue list_value_val = 17;
+
+  // Not present
+  google.protobuf.Timestamp not_present_timestamp_val = 18;
+  google.protobuf.StringValue not_present_string_value_val = 19;
+  google.protobuf.Empty not_present_empty_val = 20;
+
+  // Masked
+  google.protobuf.Timestamp masked_timestamp_val = 21 [(marshal_zap.mask) = true];
+
+  // Repeated
+  repeated google.protobuf.Timestamp repeated_timestamp_val = 31;
+  repeated google.protobuf.Duration repeated_duration_val = 32;
+  repeated google.protobuf.BoolValue repeated_bool_value_val = 33;
+  repeated google.protobuf.StringValue repeated_string_value_val = 34;
+  repeated google.protobuf.BytesValue repeated_bytes_value_val = 35;
+  repeated google.protobuf.Int32Value repeated_int32_value_val = 36;
+  repeated google.protobuf.Int64Value repeated_int64_value_val = 37;
+  repeated google.protobuf.UInt32Value repeated_uint32_value_val = 38;
+  repeated google.protobuf.UInt64Value repeated_uint64_value_val = 39;
+  repeated google.protobuf.FloatValue repeated_float_value_val = 40;
+  repeated google.protobuf.DoubleValue repeated_double_value_val = 41;
+  repeated google.protobuf.FieldMask repeated_field_mask_val = 42;
+  repeated google.protobuf.Empty repeated_empty_val = 43;
+
+  // Map
+  map<string, google.protobuf.Timestamp> map_timestamp_val = 51;
+  map<string, google.protobuf.Duration> map_duration_val = 52;
+  map<string, google.protobuf.BoolValue> map_bool_value_val = 53;
+  map<string, google.protobuf.StringValue> map_string_value_val = 54;
+  map<string, google.protobuf.BytesValue> map_bytes_value_val = 55;
+  map<string, google.protobuf.Int32Value> map_int32_value_val = 56;
+  map<string, google.protobuf.Int64Value> map_int64_value_val = 57;
+  map<string, google.protobuf.UInt32Value> map_uint32_value_val = 58;
+  map<string, google.protobuf.UInt64Value> map_uint64_value_val = 59;
+  map<string, google.protobuf.FloatValue> map_float_value_val = 60;
+  map<string, google.protobuf.DoubleValue> map_double_value_val = 61;
+  map<string, google.protobuf.FieldMask> map_field_mask_val = 62;
+  map<string, google.protobuf.Empty> map_empty_val = 63;
+
+  // Oneof
+  oneof oneof_val {
+    google.protobuf.Timestamp oneof_timestamp_val = 71;
+    google.protobuf.Duration oneof_duration_val = 72;
+    google.protobuf.BoolValue oneof_bool_value_val = 73;
+    google.protobuf.StringValue oneof_string_value_val = 74;
+    google.protobuf.BytesValue oneof_bytes_value_val = 75;
+    google.protobuf.Int32Value oneof_int32_value_val = 76;
+    google.protobuf.Int64Value oneof_int64_value_val = 77;
+    google.protobuf.UInt32Value oneof_uint32_value_val = 78;
+    google.protobuf.UInt64Value oneof_uint64_value_val = 79;
+    google.protobuf.FloatValue oneof_float_value_val = 80;
+    google.protobuf.DoubleValue oneof_double_value_val = 81;
+    google.protobuf.FieldMask oneof_field_mask_val = 82;
+    google.protobuf.Empty oneof_empty_val = 83;
+  }
+
+  // Optional
+  optional google.protobuf.Timestamp optional_timestamp_val = 91;
+  optional google.protobuf.Timestamp optional_not_present_timestamp_val = 92;
 }
