@@ -100,6 +100,7 @@ so that the output is the same as if you had passed the equivalent Go value to z
 
 This applies to singular, `optional`, `oneof`, `repeated` and `map` value fields.
 A `nil` element in a `repeated` field or a `map` value is encoded as `null`.
+`repeated google.protobuf.BytesValue` elements are appended via `AppendByteString` (as a string, not base64) because `zapcore.ArrayEncoder` has no binary method; this is the same as a `repeated bytes` field.
 Fields marked with `marshal_zap.mask` or `debug_redact` are masked as usual.
 
 `google.protobuf.Any`, `Struct`, `Value` and `ListValue` are not specially handled and are encoded via `AddReflected` like any other message that does not implement `zapcore.ObjectMarshaler`.

@@ -1,6 +1,7 @@
 package types
 
 import (
+	"strings"
 	"testing"
 	"time"
 
@@ -150,29 +151,54 @@ func TestWellKnownTypes_MarshalLogObject(t *testing.T) {
 		"optional_timestamp_val": wktTime,
 	}, enc.Fields)
 
-	// Explicit presence: not present fields must be omitted.
-	assert.NotContains(t, enc.Fields, "not_present_timestamp_val")
-	assert.NotContains(t, enc.Fields, "not_present_string_value_val")
-	assert.NotContains(t, enc.Fields, "not_present_empty_val")
-	assert.NotContains(t, enc.Fields, "oneof_duration_val")
-	assert.NotContains(t, enc.Fields, "optional_not_present_timestamp_val")
+}
+
+// A oneof member whose inner pointer is nil is encoded as the zero message
+// (only the oneof wrapper type is checked for presence).
+func TestWellKnownTypes_MarshalLogObject_NilInOneof(t *testing.T) {
+	for _, tc := range []struct {
+		oneof    isWellKnownTypes_OneofVal
+		expected map[string]interface{}
+	}{
+		{&WellKnownTypes_OneofTimestampVal{}, map[string]interface{}{"oneof_timestamp_val": time.Unix(0, 0).UTC()}},
+		{&WellKnownTypes_OneofDurationVal{}, map[string]interface{}{"oneof_duration_val": time.Duration(0)}},
+		{&WellKnownTypes_OneofStringValueVal{}, map[string]interface{}{"oneof_string_value_val": ""}},
+		{&WellKnownTypes_OneofFieldMaskVal{}, map[string]interface{}{"oneof_field_mask_val": []interface{}{}}},
+		{&WellKnownTypes_OneofEmptyVal{}, map[string]interface{}{"oneof_empty_val": map[string]interface{}{}}},
+	} {
+		m := &WellKnownTypes{OneofVal: tc.oneof}
+		enc := zapcore.NewMapObjectEncoder()
+		require.NoError(t, m.MarshalLogObject(enc))
+		delete(enc.Fields, "masked_timestamp_val")
+		for k, v := range enc.Fields {
+			// drop the always-present empty repeated/map fields
+			if s, ok := v.([]interface{}); ok && len(s) == 0 && !strings.HasPrefix(k, "oneof_") {
+				delete(enc.Fields, k)
+			}
+			if mp, ok := v.(map[string]interface{}); ok && len(mp) == 0 && !strings.HasPrefix(k, "oneof_") {
+				delete(enc.Fields, k)
+			}
+		}
+		assert.EqualValues(t, tc.expected, enc.Fields)
+	}
 }
 
 // TestWellKnownTypes_JSONEncoder verifies the actual output of zapcore's JSON encoder,
 // which is what users see in their logs.
 func TestWellKnownTypes_JSONEncoder(t *testing.T) {
 	m := &WellKnownTypes{
-		TimestampVal:         timestamppb.New(wktTime),
-		DurationVal:          durationpb.New(wktDuration),
-		StringValueVal:       wrapperspb.String("string"),
-		BytesValueVal:        wrapperspb.Bytes([]byte{1, 2, 3}),
-		FieldMaskVal:         &fieldmaskpb.FieldMask{Paths: []string{"foo", "bar.baz"}},
-		EmptyVal:             &emptypb.Empty{},
-		StructVal:            &structpb.Struct{Fields: map[string]*structpb.Value{"foo": structpb.NewStringValue("bar")}},
-		RepeatedTimestampVal: []*timestamppb.Timestamp{timestamppb.New(wktTime), nil},
-		RepeatedEmptyVal:     []*emptypb.Empty{{}, nil},
-		MapTimestampVal:      map[string]*timestamppb.Timestamp{"k": timestamppb.New(wktTime)},
-		MapEmptyVal:          map[string]*emptypb.Empty{"nil": nil},
+		TimestampVal:          timestamppb.New(wktTime),
+		DurationVal:           durationpb.New(wktDuration),
+		StringValueVal:        wrapperspb.String("string"),
+		BytesValueVal:         wrapperspb.Bytes([]byte{1, 2, 3}),
+		RepeatedBytesValueVal: []*wrapperspb.BytesValue{wrapperspb.Bytes([]byte("abc"))},
+		FieldMaskVal:          &fieldmaskpb.FieldMask{Paths: []string{"foo", "bar.baz"}},
+		EmptyVal:              &emptypb.Empty{},
+		StructVal:             &structpb.Struct{Fields: map[string]*structpb.Value{"foo": structpb.NewStringValue("bar")}},
+		RepeatedTimestampVal:  []*timestamppb.Timestamp{timestamppb.New(wktTime), nil},
+		RepeatedEmptyVal:      []*emptypb.Empty{{}, nil},
+		MapTimestampVal:       map[string]*timestamppb.Timestamp{"k": timestamppb.New(wktTime)},
+		MapEmptyVal:           map[string]*emptypb.Empty{"nil": nil},
 	}
 
 	encode := func(t *testing.T, cfg zapcore.EncoderConfig) string {
@@ -203,7 +229,7 @@ func TestWellKnownTypes_JSONEncoder(t *testing.T) {
 			`"repeated_duration_val":[],`+
 			`"repeated_bool_value_val":[],`+
 			`"repeated_string_value_val":[],`+
-			`"repeated_bytes_value_val":[],`+
+			`"repeated_bytes_value_val":["abc"],`+ // AppendByteString: string, not base64
 			`"repeated_int32_value_val":[],`+
 			`"repeated_int64_value_val":[],`+
 			`"repeated_uint32_value_val":[],`+

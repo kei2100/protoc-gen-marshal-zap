@@ -34,46 +34,49 @@ type wellKnownType struct {
 
 func unwrapValue(_ *protogen.GeneratedFile, v string) string { return v + ".GetValue()" }
 
+func asTime(_ *protogen.GeneratedFile, v string) string { return v + ".AsTime()" }
+
+func asDuration(_ *protogen.GeneratedFile, v string) string { return v + ".AsDuration()" }
+
+// fieldMaskArray returns an ArrayMarshalerFunc that appends each path of the FieldMask.
+func fieldMaskArray(g *protogen.GeneratedFile, v string) string {
+	return fmt.Sprintf("%s(func(enc %s) error { for _, p := range %s.GetPaths() { enc.AppendString(p) }; return nil })",
+		g.QualifiedGoIdent(zapcorePkg.Ident("ArrayMarshalerFunc")),
+		g.QualifiedGoIdent(zapcorePkg.Ident("ArrayEncoder")),
+		v)
+}
+
+// emptyObject returns an ObjectMarshalerFunc that encodes nothing (`{}`).
+func emptyObject(g *protogen.GeneratedFile, _ string) string {
+	return fmt.Sprintf("%s(func(%s) error { return nil })",
+		g.QualifiedGoIdent(zapcorePkg.Ident("ObjectMarshalerFunc")),
+		g.QualifiedGoIdent(zapcorePkg.Ident("ObjectEncoder")))
+}
+
+// Any, Struct, Value and ListValue are intentionally not listed here and
+// fall back to the generic message handling (ObjectMarshaler / AddReflected).
 var wellKnownTypes = map[protoreflect.FullName]wellKnownType{
-	"google.protobuf.Timestamp": {"AddTime", "AppendTime", func(_ *protogen.GeneratedFile, v string) string {
-		return v + ".AsTime()"
-	}},
-	"google.protobuf.Duration": {"AddDuration", "AppendDuration", func(_ *protogen.GeneratedFile, v string) string {
-		return v + ".AsDuration()"
-	}},
-	"google.protobuf.BoolValue":   {"AddBool", "AppendBool", unwrapValue},
-	"google.protobuf.StringValue": {"AddString", "AppendString", unwrapValue},
-	"google.protobuf.BytesValue":  {"AddBinary", "AppendByteString", unwrapValue},
-	"google.protobuf.Int32Value":  {"AddInt32", "AppendInt32", unwrapValue},
-	"google.protobuf.Int64Value":  {"AddInt64", "AppendInt64", unwrapValue},
-	"google.protobuf.UInt32Value": {"AddUint32", "AppendUint32", unwrapValue},
-	"google.protobuf.UInt64Value": {"AddUint64", "AppendUint64", unwrapValue},
-	"google.protobuf.FloatValue":  {"AddFloat32", "AppendFloat32", unwrapValue},
-	"google.protobuf.DoubleValue": {"AddFloat64", "AppendFloat64", unwrapValue},
+	"google.protobuf.Timestamp":   {addMethod: "AddTime", appendMethod: "AppendTime", valueExpr: asTime},
+	"google.protobuf.Duration":    {addMethod: "AddDuration", appendMethod: "AppendDuration", valueExpr: asDuration},
+	"google.protobuf.BoolValue":   {addMethod: "AddBool", appendMethod: "AppendBool", valueExpr: unwrapValue},
+	"google.protobuf.StringValue": {addMethod: "AddString", appendMethod: "AppendString", valueExpr: unwrapValue},
+	// zapcore.ArrayEncoder has no AppendBinary, so repeated elements are appended as a string
+	// (same as a `repeated bytes` field).
+	"google.protobuf.BytesValue":  {addMethod: "AddBinary", appendMethod: "AppendByteString", valueExpr: unwrapValue},
+	"google.protobuf.Int32Value":  {addMethod: "AddInt32", appendMethod: "AppendInt32", valueExpr: unwrapValue},
+	"google.protobuf.Int64Value":  {addMethod: "AddInt64", appendMethod: "AppendInt64", valueExpr: unwrapValue},
+	"google.protobuf.UInt32Value": {addMethod: "AddUint32", appendMethod: "AppendUint32", valueExpr: unwrapValue},
+	"google.protobuf.UInt64Value": {addMethod: "AddUint64", appendMethod: "AppendUint64", valueExpr: unwrapValue},
+	"google.protobuf.FloatValue":  {addMethod: "AddFloat32", appendMethod: "AppendFloat32", valueExpr: unwrapValue},
+	"google.protobuf.DoubleValue": {addMethod: "AddFloat64", appendMethod: "AppendFloat64", valueExpr: unwrapValue},
 	// FieldMask -> array of path strings, same as a `repeated string` field.
-	"google.protobuf.FieldMask": {"AddArray", "AppendArray", func(g *protogen.GeneratedFile, v string) string {
-		return g.QualifiedGoIdent(zapcorePkg.Ident("ArrayMarshalerFunc")) +
-			"(func(enc " + g.QualifiedGoIdent(zapcorePkg.Ident("ArrayEncoder")) + ") error {\n" +
-			"for _, p := range " + v + ".GetPaths() {\n" +
-			"enc.AppendString(p)\n" +
-			"}\n" +
-			"return nil\n" +
-			"})"
-	}},
+	"google.protobuf.FieldMask": {addMethod: "AddArray", appendMethod: "AppendArray", valueExpr: fieldMaskArray},
 	// Empty -> empty object `{}`.
-	"google.protobuf.Empty": {"AddObject", "AppendObject", func(g *protogen.GeneratedFile, _ string) string {
-		return g.QualifiedGoIdent(zapcorePkg.Ident("ObjectMarshalerFunc")) +
-			"(func(" + g.QualifiedGoIdent(zapcorePkg.Ident("ObjectEncoder")) + ") error { return nil })"
-	}},
-	// Any, Struct, Value and ListValue are intentionally not listed here and
-	// fall back to the generic message handling (ObjectMarshaler / AddReflected).
+	"google.protobuf.Empty": {addMethod: "AddObject", appendMethod: "AppendObject", valueExpr: emptyObject},
 }
 
 // lookupWellKnownType returns the well-known type definition for md, if any.
 func lookupWellKnownType(md protoreflect.MessageDescriptor) (wellKnownType, bool) {
-	if md == nil {
-		return wellKnownType{}, false
-	}
 	wkt, ok := wellKnownTypes[md.FullName()]
 	return wkt, ok
 }
@@ -209,7 +212,9 @@ func generatePrimitiveField(g *protogen.GeneratedFile, f *protogen.Field) {
 		g.P("enc.AddReflected(\"", fname, "\", x.", gname, ")")
 	case protoreflect.MessageKind:
 		if wkt, ok := lookupWellKnownType(f.Desc.Message()); ok {
-			// nil is already handled by handleExplicitPresence.
+			// nil is guarded by handleExplicitPresence for singular and optional fields.
+			// For a oneof member, only the wrapper type is checked; a nil inner pointer is
+			// treated as the zero message (AsTime, AsDuration, GetValue and GetPaths are nil-safe).
 			g.P("enc.", wkt.addMethod, "(\"", fname, "\", ", wkt.valueExpr(g, "x."+gname), ")")
 			break
 		}
